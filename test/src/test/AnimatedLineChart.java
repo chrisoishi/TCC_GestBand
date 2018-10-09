@@ -15,9 +15,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import javafx.scene.layout.FlowPane;
 
-
 public class AnimatedLineChart extends Application {
-    private static final int MAX_DATA_POINTS = 50;
+
+    private static final int MAX_DATA_POINTS = 500;
     private int xSeriesData = 0;
     private XYChart.Series<Number, Number> series1 = new XYChart.Series<>();
     private XYChart.Series<Number, Number> series2 = new XYChart.Series<>();
@@ -33,6 +33,8 @@ public class AnimatedLineChart extends Application {
     private ConcurrentLinkedQueue<Number> dataQ5 = new ConcurrentLinkedQueue<>();
     private ConcurrentLinkedQueue<Number> dataQ6 = new ConcurrentLinkedQueue<>();
     private FlowPane root = new FlowPane();
+    private String s = "";
+    private String[] s2;
 
     private NumberAxis xAxis;
     private NumberAxis xAxis1;
@@ -45,18 +47,17 @@ public class AnimatedLineChart extends Application {
         xAxis.setTickLabelsVisible(false);
         xAxis.setTickMarkVisible(false);
         xAxis.setMinorTickVisible(false);
-        
+
         xAxis1 = new NumberAxis(0, MAX_DATA_POINTS, MAX_DATA_POINTS / 10);
         xAxis1.setForceZeroInRange(false);
         xAxis1.setAutoRanging(false);
         xAxis1.setTickLabelsVisible(false);
         xAxis1.setTickMarkVisible(false);
         xAxis1.setMinorTickVisible(false);
-        
 
         NumberAxis yAxis = new NumberAxis();
         NumberAxis yAxis1 = new NumberAxis();
-        
+
         // Create a LineChart
         final LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis) {
             // Override to remove symbols on each data point
@@ -74,11 +75,10 @@ public class AnimatedLineChart extends Application {
         lineChart.setAnimated(false);
         lineChart.setTitle("Acc Time Series");
         lineChart.setHorizontalGridLinesVisible(true);
-        
+
         lineChart1.setAnimated(false);
         lineChart1.setTitle("Gyro Time Series");
         lineChart1.setHorizontalGridLinesVisible(true);
-
 
         // Set Name for Series
         series1.setName("Acc X");
@@ -89,24 +89,21 @@ public class AnimatedLineChart extends Application {
         series6.setName("Gyro Z");
 
         // Add Chart Series
-        
         lineChart.getData().addAll(series1, series2, series3);
         lineChart1.getData().addAll(series4, series5, series6);
 
         root.getChildren().addAll(lineChart, lineChart1);
-        
+
         Scene scene = new Scene(root, 1000, 400);
         primaryStage.setScene(scene);
-       
-    }
 
+    }
 
     @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("GestBand");
         init(stage);
         stage.show();
-
 
         executor = Executors.newCachedThreadPool(new ThreadFactory() {
             @Override
@@ -117,31 +114,12 @@ public class AnimatedLineChart extends Application {
             }
         });
 
-        AddToQueue addToQueue = new AddToQueue();
-        executor.execute(addToQueue);
-        //-- Prepare Timeline
+
         prepareTimeline();
         startConnection();
     }
 
-    private class AddToQueue implements Runnable {
-        public void run() {
-            try {
-                // add a item of random data to queue
-                dataQ1.add(Math.random());
-                dataQ2.add(Math.random());
-                dataQ3.add(Math.random());
-                dataQ4.add(Math.random());
-                dataQ5.add(Math.random());
-                dataQ6.add(Math.random());
 
-                Thread.sleep(500);
-                executor.execute(this);
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
 
     //-- Timeline gets called in the JavaFX Main thread
     private void prepareTimeline() {
@@ -156,10 +134,12 @@ public class AnimatedLineChart extends Application {
 
     private void addDataToSeries() {
         for (int i = 0; i < 20; i++) { //-- add 20 numbers to the plot+
-            if (dataQ1.isEmpty()) break;
+            if (dataQ1.isEmpty()) {
+                break;
+            }
             series1.getData().add(new XYChart.Data<>(xSeriesData++, dataQ1.remove()));
             series2.getData().add(new XYChart.Data<>(xSeriesData++, dataQ2.remove()));
-            series3.getData().add(new XYChart.Data<>(xSeriesData++, dataQ3.remove()));            
+            series3.getData().add(new XYChart.Data<>(xSeriesData++, dataQ3.remove()));
             series4.getData().add(new XYChart.Data<>(xSeriesData++, dataQ4.remove()));
             series5.getData().add(new XYChart.Data<>(xSeriesData++, dataQ5.remove()));
             series6.getData().add(new XYChart.Data<>(xSeriesData++, dataQ6.remove()));
@@ -189,13 +169,30 @@ public class AnimatedLineChart extends Application {
         xAxis1.setLowerBound(xSeriesData - MAX_DATA_POINTS);
         xAxis1.setUpperBound(xSeriesData - 1);
     }
-    private void startConnection() throws IOException{
-        ServerInSocket.Actions actionsReceive = new ServerInSocket.Actions(){
-            public void run(char c){
-                System.out.print(c);
+
+    private void startConnection() throws IOException {
+        ServerInSocket.Actions actionsReceive = new ServerInSocket.Actions() {
+            public void run(char c) {
+
+                if (c == '|') {
+                    s2 = s.split(":");
+                    if (s2[0].equals("A")) {
+                        dataQ1.add(Integer.valueOf(s2[1]));
+                        dataQ2.add(Integer.valueOf(s2[2]));
+                        dataQ3.add(Integer.valueOf(s2[3]));
+                    } else {
+                        dataQ4.add(Integer.valueOf(s2[1]));
+                        dataQ5.add(Integer.valueOf(s2[2]));
+                        dataQ6.add(Integer.valueOf(s2[3]));
+                    }
+                    System.out.println(s);
+                    s = "";
+                } else {
+
+                    s = s + Character.toString(c);
+                }
             }
         };
         ServerInSocket.Start(actionsReceive);
     }
-
 }
