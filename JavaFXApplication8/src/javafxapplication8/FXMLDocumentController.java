@@ -41,13 +41,14 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private void connect_start(ActionEvent event) throws IOException {
-        connection_settings();
+        //connection_settings();
         panel_connect_start.setVisible(false);
         panel_connect.setVisible(true);
     }
     
     @FXML
     private void graph(ActionEvent event) throws IOException {
+        JavaFXApplication8.show_graph();
     }
     
  

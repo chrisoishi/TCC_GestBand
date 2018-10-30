@@ -17,7 +17,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import javafx.scene.layout.FlowPane;
 
-public class AnimatedLineChart extends Application {
+public class AnimatedLineChart {
 
     private static final int MAX_DATA_POINTS = 500;
     private int xSeriesData = 0;
@@ -101,8 +101,8 @@ public class AnimatedLineChart extends Application {
 
     }
 
-    @Override
     public void start(Stage stage) throws IOException {
+        
         stage.setTitle("GestBand");
         init(stage);
         stage.show();
@@ -118,7 +118,6 @@ public class AnimatedLineChart extends Application {
 
 
         prepareTimeline();
-        startConnection();
     }
 
 
@@ -172,12 +171,8 @@ public class AnimatedLineChart extends Application {
         xAxis1.setUpperBound(xSeriesData - 1);
     }
 
-    private void startConnection() throws IOException {
-        ServerInSocket.Actions actionsReceive = new ServerInSocket.Actions() {
-            public void run(char c) {
-
-                if (c == '|') {
-                    s2 = s.split(":");
+    public void print(String s){
+    s2 = s.split(":");
                     if (s2[0].equals("A")) {
                         dataQ1.add(Integer.valueOf(s2[1]));
                         dataQ2.add(Integer.valueOf(s2[2]));
@@ -187,13 +182,9 @@ public class AnimatedLineChart extends Application {
                         dataQ5.add(Integer.valueOf(s2[2]));
                         dataQ6.add(Integer.valueOf(s2[3]));
                     }
-                    s = "";
-                } else {
+    }
 
-                    s = s + Character.toString(c);
-                }
-            }
-        };
-        ServerInSocket.Start(actionsReceive);
+    void start(Scene scene2) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
