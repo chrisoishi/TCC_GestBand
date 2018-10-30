@@ -9,7 +9,7 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<VBox prefHeight="400.0" prefWidth="640.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapplication8.FXMLDocumentController">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -56,7 +56,7 @@
           <items>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="90.0" prefWidth="158.0">
               <children>
-                <Button id="button1" mnemonicParsing="false" prefHeight="77.0" prefWidth="158.0" style="" text="Button" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <Button id="btn_connect" mnemonicParsing="false" onAction="#show_connect1" prefHeight="77.0" prefWidth="158.0" style="" text="Conectar" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                   <contextMenu>
                     <ContextMenu>
                       <items>
@@ -69,7 +69,7 @@
             </AnchorPane>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
               <children>
-                <Button id="button2" mnemonicParsing="false" prefHeight="73.0" prefWidth="158.0" text="Button" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                <Button id="button2" mnemonicParsing="false" onAction="#graph" prefHeight="73.0" prefWidth="158.0" text="Graficos" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
               </children>
             </AnchorPane>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="77.0" prefWidth="158.0">
@@ -88,15 +88,7 @@
             </AnchorPane>
           </items>
         </SplitPane>
-        <LineChart id="LineChartNxN" layoutX="160.0" layoutY="60.0" prefHeight="316.0" prefWidth="466.0">
-          <xAxis>
-            <NumberAxis side="BOTTOM" />
-          </xAxis>
-          <yAxis>
-            <NumberAxis side="LEFT" />
-          </yAxis>
-        </LineChart>
-        <Label id="label1" layoutX="1.0" layoutY="1.0" prefHeight="59.0" prefWidth="202.0" text="GestBand App" textAlignment="CENTER" textFill="BLACK" textOverrun="WORD_ELLIPSIS" underline="false" wrapText="true">
+        <Label id="label1" layoutX="1.0" layoutY="1.0" prefHeight="59.0" prefWidth="655.0" text="GestBand App" textAlignment="CENTER" textFill="BLACK" textOverrun="WORD_ELLIPSIS" underline="false" wrapText="true">
           <font>
             <Font name="Calibri Light" size="30.0" />
           </font>
@@ -104,6 +96,73 @@
             <URL value="@Style.css" />
           </stylesheets>
         </Label>
+            <GridPane fx:id="panel_connect" layoutX="169.0" layoutY="61.0" minHeight="-Infinity" prefWidth="486.0" visible="false">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints vgrow="SOMETIMES" />
+                <RowConstraints minHeight="0.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="0.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <TextField id="txt_ssid" fx:id="ssid" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Label minHeight="-Infinity" minWidth="193.0" prefHeight="30.0" prefWidth="193.0" text="SSID" textAlignment="CENTER" GridPane.rowIndex="1">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+                  <Label minHeight="-Infinity" minWidth="243.0" prefHeight="30.0" prefWidth="243.0" text="Senha" textAlignment="CENTER" GridPane.rowIndex="2">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+                  <TextField id="txt_senha" fx:id="pass" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Label minHeight="-Infinity" minWidth="179.0" prefHeight="30.0" prefWidth="179.0" text="IP Server" textAlignment="CENTER" GridPane.rowIndex="4">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+                  <TextField id="txt_ip" fx:id="ip" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <Label minHeight="-Infinity" minWidth="193.0" prefHeight="30.0" prefWidth="193.0" text="Configurar GestBand" textAlignment="CENTER">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+                  <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="255.0" text="Salvar" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+               </children>
+            </GridPane>
+            <GridPane fx:id="panel_connect_start" layoutX="179.0" layoutY="71.0" minHeight="-Infinity" prefWidth="486.0" visible="false">
+               <children>
+                  <Label minHeight="-Infinity" minWidth="193.0" prefHeight="30.0" prefWidth="193.0" text="Configurar GestBand" textAlignment="CENTER">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+                  <Button mnemonicParsing="false" onAction="#connect_start" prefHeight="25.0" prefWidth="255.0" text="Iniciar" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <Label minHeight="-Infinity" minWidth="179.0" prefHeight="30.0" prefWidth="241.0" text="*Conecte no wifi &quot;GestBand&quot;&quot; e clique em iniciar" textAlignment="CENTER" GridPane.rowIndex="4">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Label>
+               </children>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="0.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="0.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+            </GridPane>
       </children>
     </AnchorPane>
     <TilePane prefHeight="200.0" prefWidth="200.0" />

@@ -1,4 +1,4 @@
-package test;
+package javafxapplication8;
 
 import java.io.IOException;
 import javafx.animation.AnimationTimer;
