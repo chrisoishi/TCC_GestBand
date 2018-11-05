@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import Controllers.* ?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MainController">
+  <children>
+    <MenuBar VBox.vgrow="NEVER">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" text="New" />
+            <MenuItem mnemonicParsing="false" text="Open…" />
+            <Menu mnemonicParsing="false" text="Open Recent" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Close" />
+            <MenuItem mnemonicParsing="false" text="Save" />
+            <MenuItem mnemonicParsing="false" text="Save As…" />
+            <MenuItem mnemonicParsing="false" text="Revert" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Preferences…" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Quit" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+          <items>
+            <MenuItem mnemonicParsing="false" text="Undo" />
+            <MenuItem mnemonicParsing="false" text="Redo" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Cut" />
+            <MenuItem mnemonicParsing="false" text="Copy" />
+            <MenuItem mnemonicParsing="false" text="Paste" />
+            <MenuItem mnemonicParsing="false" text="Delete" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Select All" />
+            <MenuItem mnemonicParsing="false" text="Unselect All" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="376.0" prefWidth="640.0" VBox.vgrow="ALWAYS">
+      <children>
+        <SplitPane dividerPositions="0.25236593059936907, 0.501577287066246, 0.750788643533123" focusTraversable="true" layoutX="0.0" layoutY="59.0" orientation="VERTICAL" prefHeight="319.0" prefWidth="160.0">
+          <items>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="90.0" prefWidth="158.0">
+              <children>
+                <Button id="btn_connect" mnemonicParsing="false" onAction="#show_panel_connection" prefHeight="77.0" prefWidth="158.0" style="" text="Conexão" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <contextMenu>
+                    <ContextMenu>
+                      <items>
+                        <MenuItem mnemonicParsing="false" text="Unspecified Action" />
+                      </items>
+                    </ContextMenu>
+                  </contextMenu>
+                </Button>
+              </children>
+            </AnchorPane>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+              <children>
+                <Button id="button2" mnemonicParsing="false" onAction="#graph" prefHeight="73.0" prefWidth="158.0" text="Graficos" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+              </children>
+            </AnchorPane>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="77.0" prefWidth="158.0">
+              <children>
+                <Button mnemonicParsing="false" prefHeight="73.0" prefWidth="158.0" text="Button" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+              </children>
+            </AnchorPane>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="184.0" prefWidth="158.0">
+              <children>
+                <Button mnemonicParsing="false" prefHeight="76.0" prefWidth="158.0" text="Button" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <stylesheets>
+                    <URL value="@Style.css" />
+                  </stylesheets>
+                </Button>
+              </children>
+            </AnchorPane>
+          </items>
+        </SplitPane>
+        <Label id="label1" layoutX="1.0" layoutY="1.0" prefHeight="59.0" prefWidth="289.0" text="GestBand App" textAlignment="CENTER" textFill="BLACK" textOverrun="WORD_ELLIPSIS" underline="false" wrapText="true">
+          <font>
+            <Font name="Calibri Light" size="30.0" />
+          </font>
+          <stylesheets>
+            <URL value="@Style.css" />
+          </stylesheets>
+        </Label>
+            <GridPane fx:id="panel_configure_wifi" layoutX="169.0" layoutY="61.0" minHeight="-Infinity" prefWidth="486.0" visible="false">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints vgrow="SOMETIMES" />
+                <RowConstraints minHeight="0.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="0.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <TextField id="txt_ssid" fx:id="ssid" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Label minHeight="-Infinity" minWidth="193.0" prefHeight="30.0" prefWidth="193.0" text="SSID" textAlignment="CENTER" GridPane.rowIndex="1">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+                  <Label minHeight="-Infinity" minWidth="243.0" prefHeight="30.0" prefWidth="243.0" text="Senha" textAlignment="CENTER" GridPane.rowIndex="2">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+                  <TextField id="txt_senha" fx:id="pass" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Label minHeight="-Infinity" minWidth="193.0" prefHeight="30.0" prefWidth="193.0" text="Configurar GestBand" textAlignment="CENTER">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+                  <Button mnemonicParsing="false" onAction="#send_wifi_settings" prefHeight="25.0" prefWidth="255.0" text="Salvar" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <Button mnemonicParsing="false" onAction="#restart" prefHeight="25.0" prefWidth="255.0" text="Reiniciar" GridPane.rowIndex="4" />
+               </children>
+            </GridPane>
+            <GridPane fx:id="panel_connect" layoutX="179.0" layoutY="71.0" minHeight="-Infinity" prefWidth="486.0" visible="false">
+               <children>
+                  <Label minHeight="-Infinity" minWidth="193.0" prefHeight="30.0" prefWidth="193.0" text="Conexão" textAlignment="CENTER">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+                  <Button mnemonicParsing="false" onAction="#configure_wifi" prefHeight="25.0" prefWidth="255.0" text="Configurar WiFi" GridPane.rowIndex="5" />
+                  <Label minHeight="-Infinity" minWidth="179.0" prefHeight="30.0" prefWidth="241.0" text="IP GestBand" textAlignment="CENTER" GridPane.rowIndex="4">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Label>
+                  <TextField id="txt_ip" fx:id="ip" minHeight="-Infinity" minWidth="-Infinity" text="192.168.4.1" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <Button mnemonicParsing="false" onAction="#connection_start" prefHeight="25.0" prefWidth="255.0" text="Conectar" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+               </children>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="0.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="0.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+            </GridPane>
+            <Label fx:id="label_connection" layoutX="460.0" layoutY="12.0" prefHeight="37.0" prefWidth="205.0" text="Desconectado" textAlignment="RIGHT">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Label>
+      </children>
+    </AnchorPane>
+    <TilePane prefHeight="200.0" prefWidth="200.0" />
+  </children>
+</VBox>
