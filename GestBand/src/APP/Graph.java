@@ -15,11 +15,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 
 public class Graph {
 
-    private static final int MAX_DATA_POINTS = 500;
+    private static final int MAX_DATA_POINTS = 100;
     private int xSeriesData = 0;
     private XYChart.Series<Number, Number> series1 = new XYChart.Series<>();
     private XYChart.Series<Number, Number> series2 = new XYChart.Series<>();
@@ -40,22 +45,75 @@ public class Graph {
 
     private NumberAxis xAxis;
     private NumberAxis xAxis1;
+    
+    Button btnStop = new Button();
+    Button btnSave = new Button();
+    Button btnClear = new Button();
+    boolean stop = false;
 
     private void init(Stage primaryStage) {
+
+        Label label1 = new Label("Name:");
+        TextField textField = new TextField ();
+        TextField textField2 = new TextField ();
 
         xAxis = new NumberAxis(0, MAX_DATA_POINTS, MAX_DATA_POINTS / 10);
         xAxis.setForceZeroInRange(false);
         xAxis.setAutoRanging(false);
-        xAxis.setTickLabelsVisible(false);
-        xAxis.setTickMarkVisible(false);
-        xAxis.setMinorTickVisible(false);
-
+        xAxis.setTickLabelsVisible(true);
+        xAxis.setTickMarkVisible(true);
+        xAxis.setMinorTickVisible(true);
+        
         xAxis1 = new NumberAxis(0, MAX_DATA_POINTS, MAX_DATA_POINTS / 10);
         xAxis1.setForceZeroInRange(false);
         xAxis1.setAutoRanging(false);
-        xAxis1.setTickLabelsVisible(false);
-        xAxis1.setTickMarkVisible(false);
-        xAxis1.setMinorTickVisible(false);
+        xAxis1.setTickLabelsVisible(true);
+        xAxis1.setTickMarkVisible(true);
+        xAxis1.setMinorTickVisible(true);
+        
+        btnStop.setText("Start/Stop");
+        btnStop.setOnAction(new EventHandler<ActionEvent>() {
+            
+            @Override
+        public void handle(ActionEvent event) {
+            
+            for(int i=0; i<series1.getData().size(); i++){
+            float f = series1.getData().get(i).getYValue().floatValue();
+            System.out.println(i + ":  " + f);
+            }
+            if(stop)
+              stop = false;
+            else
+              stop =true;
+        }
+        });
+        
+        btnSave.setText("Save");
+        btnSave.setOnAction(new EventHandler<ActionEvent>() {
+            
+            @Override
+        public void handle(ActionEvent event) {
+                System.out.println("Hello World!");
+        }
+        });
+        
+        btnClear.setText("Clear");
+        btnClear.setOnAction(new EventHandler<ActionEvent>() {
+            
+            @Override
+        public void handle(ActionEvent event) {
+                if(stop){
+                    series1.getData().clear();
+                    series2.getData().clear();
+                    series3.getData().clear();
+                    series4.getData().clear();
+                    series5.getData().clear();
+                    series6.getData().clear();
+                    xSeriesData=0;
+                    addDataToSeries();
+                }
+        }
+        });
 
         NumberAxis yAxis = new NumberAxis();
         NumberAxis yAxis1 = new NumberAxis();
@@ -94,9 +152,8 @@ public class Graph {
         lineChart.getData().addAll(series1, series2, series3);
         lineChart1.getData().addAll(series4, series5, series6);
 
-        root.getChildren().addAll(lineChart, lineChart1);
-
-        Scene scene = new Scene(root, 1000, 400);
+        root.getChildren().addAll(lineChart, lineChart1,btnStop, btnSave, btnClear,textField,textField2);
+        Scene scene = new Scene(root, 1000, 600);
         primaryStage.setScene(scene);
 
     }
@@ -135,34 +192,32 @@ public class Graph {
 
     private void addDataToSeries() {
         for (int i = 0; i < 20; i++) { //-- add 20 numbers to the plot+
-            if (dataQ1.isEmpty()) {
-                break;
-            }
-            series1.getData().add(new XYChart.Data<>(xSeriesData++, dataQ1.remove()));
-            series2.getData().add(new XYChart.Data<>(xSeriesData++, dataQ2.remove()));
-            series3.getData().add(new XYChart.Data<>(xSeriesData++, dataQ3.remove()));
-            series4.getData().add(new XYChart.Data<>(xSeriesData++, dataQ4.remove()));
-            series5.getData().add(new XYChart.Data<>(xSeriesData++, dataQ5.remove()));
-            series6.getData().add(new XYChart.Data<>(xSeriesData++, dataQ6.remove()));
+            if (dataQ1.isEmpty()) break;
+            series1.getData().add(new XYChart.Data<>(xSeriesData, dataQ1.remove()));
+            series2.getData().add(new XYChart.Data<>(xSeriesData, dataQ2.remove()));
+            series3.getData().add(new XYChart.Data<>(xSeriesData, dataQ3.remove()));            
+            series4.getData().add(new XYChart.Data<>(xSeriesData, dataQ4.remove()));
+            series5.getData().add(new XYChart.Data<>(xSeriesData, dataQ5.remove()));
+            series6.getData().add(new XYChart.Data<>(xSeriesData, dataQ6.remove()));
+            if(xSeriesData<MAX_DATA_POINTS)
+                xSeriesData++;
         }
-        // remove points to keep us at no more than MAX_DATA_POINTS
+        
         if (series1.getData().size() > MAX_DATA_POINTS) {
             series1.getData().remove(0, series1.getData().size() - MAX_DATA_POINTS);
-        }
-        if (series2.getData().size() > MAX_DATA_POINTS) {
             series2.getData().remove(0, series2.getData().size() - MAX_DATA_POINTS);
-        }
-        if (series3.getData().size() > MAX_DATA_POINTS) {
             series3.getData().remove(0, series3.getData().size() - MAX_DATA_POINTS);
-        }
-        if (series4.getData().size() > MAX_DATA_POINTS) {
             series4.getData().remove(0, series4.getData().size() - MAX_DATA_POINTS);
-        }
-        if (series5.getData().size() > MAX_DATA_POINTS) {
             series5.getData().remove(0, series5.getData().size() - MAX_DATA_POINTS);
-        }
-        if (series6.getData().size() > MAX_DATA_POINTS) {
             series6.getData().remove(0, series6.getData().size() - MAX_DATA_POINTS);
+            for(int j=0; j<series1.getData().size();j++){
+                series1.getData().get(j).setXValue(j-1);
+                series2.getData().get(j).setXValue(j-1);
+                series3.getData().get(j).setXValue(j-1);
+                series4.getData().get(j).setXValue(j-1);
+                series5.getData().get(j).setXValue(j-1);
+                series6.getData().get(j).setXValue(j-1);
+            }
         }
         // update
         xAxis.setLowerBound(xSeriesData - MAX_DATA_POINTS);
@@ -173,15 +228,17 @@ public class Graph {
 
     public void print(String s){
     s2 = s.split(":");
-                    if (s2[0].equals("A")) {
-                        dataQ1.add(Integer.valueOf(s2[1]));
-                        dataQ2.add(Integer.valueOf(s2[2]));
-                        dataQ3.add(Integer.valueOf(s2[3]));
-                    } else {
-                        dataQ4.add(Integer.valueOf(s2[1]));
-                        dataQ5.add(Integer.valueOf(s2[2]));
-                        dataQ6.add(Integer.valueOf(s2[3]));
-                    }
+        if(!stop){
+            if (s2[0].equals("A")) {
+                dataQ1.add(Integer.valueOf(s2[1]));
+                dataQ2.add(Integer.valueOf(s2[2]));
+                dataQ3.add(Integer.valueOf(s2[3]));
+            } else {
+                dataQ4.add(Integer.valueOf(s2[1]));
+                dataQ5.add(Integer.valueOf(s2[2]));
+                dataQ6.add(Integer.valueOf(s2[3]));
+            }
+        }
     }
 
     void start(Scene scene2) {
