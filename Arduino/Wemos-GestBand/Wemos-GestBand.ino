@@ -4,6 +4,7 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <EEPROM.h>
+#include "bitmaps.h"
 
 // #### OLED ####
 #define OLED_RESET 0  // GPIO0
@@ -34,67 +35,113 @@ WiFiServer server(3322);
 bool gb_client = false;
 bool gb_send_data = false;
 
+
+void clear_pixel(int x,int y,int width,int height){
+  for(int i=x;i<x+width;i++){
+    for(int j=y;j<y+height;j++){
+      OLED.drawPixel(i, j, BLACK); 
+    }
+  }
+}
+
+void setup() {
+  EEPROM.begin(512);
+  delay(10);
+  Serial.begin(115200);
+  setup_OLED();
+  setup_sensor();  
+  delay(10);
+  initialize();
+}
+
+void initialize(){
+  gb_client = false;
+  gb_send_data = false;
+  read_configs();
+  OLED.clearDisplay();
+  OLED.setCursor(0,0);
+  OLED.drawBitmap(0, 0, bmp_gestband, 128, 32, 1);
+  OLED.display();
+  setup_wifi();
+}
+
+
 void read_configs(){
+    char c;
     for (int i = 0; i < 32; ++i) {
-      ssid += char(EEPROM.read(i));
+      c = char(EEPROM.read(i));
+      if(c!=';')ssid += c;
+      else break;
     }
     for (int i = 32; i < 96; ++i) {
-      pass += char(EEPROM.read(i));
+      c = char(EEPROM.read(i));
+      if(c!=';')pass += c;
+      else break;
     }
 }
 
 
 void save_configs(){
-    for(int i=0;i<ssid.length();i++){
-      Serial.print(ssid[i]);
-      EEPROM.write(i, ssid[i]);
+    for(int i=0;i<32;i++){
+      if(i<ssid.length())EEPROM.write(i, ssid[i]);
+      else EEPROM.write(i, ';');
     }
-    for(int i=0;i<pass.length();i++){
-      EEPROM.write(i+32, pass[i]);
+    for(int i=0;i<64;i++){
+      if(i<pass.length())EEPROM.write(i+32, pass[i]);
+      else EEPROM.write(i+32, ';');
     }
     EEPROM.commit();
 }
 
+
+
 void setup_wifi(){
-  gb_client = false;
-  gb_send_data = false;
-  int wifi_wait = 0;
-  OLED.clearDisplay();
-  OLED.setCursor(0,0);
-  OLED.println("Connecting to wifi");
-  OLED.println(ssid);
-  OLED.display();
-
   WiFi.begin(ssid.c_str(), pass.c_str());
-
+  
+  int wifi_wait = 0;
   while (WiFi.status() != WL_CONNECTED) {
     if(wifi_wait < 2){
-      delay(1000);
-      OLED.print(".");
+      if(wifi_wait%4==0){
+        clear_pixel(32,24,128-32,8);
+        OLED.setCursor(32,24);
+        OLED.print(ssid);
+      }
+      else OLED.print(".");
       OLED.display();
+      delay(1000);
       wifi_wait++;
     }
     else{
-      OLED.clearDisplay();
-      OLED.setCursor(0,0);
-      OLED.println("Connecting failed");
+      clear_pixel(32,24,128-32,8);
+      OLED.setCursor(32,24);
+      OLED.print("FAILED!");
+      OLED.display();
+      delay(2000);
+      clear_pixel(32,24,128-32,8);
+      OLED.setCursor(32,24);
       OLED.println("Creating Wifi...");
       OLED.display();
       delay(2000);
-      setup_server();
+      setup_wifi_server();
       return;
     }
 
   }
+  setup_wifi_client();
+
+}
+void setup_wifi_client(){
   server.begin();
+  WiFi.mode(WIFI_STA);
   OLED.clearDisplay();
   OLED.setCursor(0,0);
   OLED.println("Gestband");
   OLED.print("IP:");
   OLED.println( WiFi.localIP());
   OLED.println("Wait Connection...");
+  OLED.display();  
 }
-void setup_server(){
+void setup_wifi_server(){
       OLED.clearDisplay();
       server.begin();
       OLED.setCursor(0,0);
@@ -122,7 +169,7 @@ void wait_client(){
 }
 
 void read_client(){
-  if(!app_client.connected())setup_wifi();
+  if(!app_client.connected())initialize();
   if(!app_client.available())return;
   String req = app_client.readStringUntil('|');
   String aux="";
@@ -141,7 +188,7 @@ void read_client(){
         gb_send_data=false;
       }
       else if(aux=="restart"){
-        setup_wifi();
+        initialize();
       }
       return;
       }
@@ -240,16 +287,7 @@ void send_data(){
    }
  }
 
-void setup() {
-  EEPROM.begin(512);
-  delay(10);
-  read_configs();
-  Serial.begin(115200);
-  setup_OLED();
-  setup_sensor();  
-  delay(10);
-  setup_wifi();
-}
+
 
 void loop() {
   wait_client();

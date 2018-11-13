@@ -52,6 +52,11 @@ public class Main extends Application {
         });
         stage.show();
         Main.Graph = new Graph();
+        
+                Gestures g = new Gestures();
+
+        g.name = "sdgsdgsd";
+        System.out.println(g.toString());
 
     }
 
@@ -107,6 +112,7 @@ public class Main extends Application {
 
     public static void main(String[] args) throws IOException {
 
+        
         launch(args);
 
     }

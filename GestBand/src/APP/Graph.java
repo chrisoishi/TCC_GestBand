@@ -1,6 +1,12 @@
 package APP;
 
 import TCP.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -14,6 +20,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -52,6 +60,9 @@ public class Graph {
     Button btnClear = new Button();
     Button btnTest = new Button();
     boolean stop = false;
+
+    private DTW lDTW = new DTW();
+    private boolean test_dtw = false;
 
     private void init(Stage primaryStage) {
 
@@ -92,8 +103,10 @@ public class Graph {
 
             @Override
             public void handle(ActionEvent event) {
-                for (int i = 0; i < series1.getData().size(); i++) {
-                    s_saved[i] = series1.getData().get(i).getYValue().floatValue();
+                try {
+                    writeFile();
+                } catch (IOException ex) {
+                    Logger.getLogger(Graph.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -124,7 +137,7 @@ public class Graph {
                 for (int i = 0; i < series1.getData().size(); i++) {
                     s_test[i] = series1.getData().get(i).getYValue().floatValue();
                 }
-                DTW lDTW = new DTW();
+
                 System.out.println(lDTW.compute(s_test, s_saved).getDistance());
             }
         });
@@ -257,5 +270,55 @@ public class Graph {
 
     void start(Scene scene2) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void writeFile() throws IOException {
+        File file = new File("myfile.txt");
+        FileWriter fw = new FileWriter(file, true);
+        BufferedWriter writer = new BufferedWriter(fw);
+        Gestures g = new Gestures();
+        g.name = "sdgsdgsd";
+        for (int i = 0; i < series1.getData().size(); i++) {
+            s_saved[i] = series1.getData().get(i).getYValue().floatValue();
+        }
+        g.acX = s_saved;
+        for (int i = 0; i < series2.getData().size(); i++) {
+            s_saved[i] = series2.getData().get(i).getYValue().floatValue();
+        }
+        g.acY = s_saved;
+        for (int i = 0; i < series3.getData().size(); i++) {
+            s_saved[i] = series3.getData().get(i).getYValue().floatValue();
+        }
+        g.acZ = s_saved;
+        for (int i = 0; i < series4.getData().size(); i++) {
+            s_saved[i] = series4.getData().get(i).getYValue().floatValue();
+        }
+        g.gX = s_saved;
+        for (int i = 0; i < series5.getData().size(); i++) {
+            s_saved[i] = series5.getData().get(i).getYValue().floatValue();
+        }
+        g.gY = s_saved;
+        for (int i = 0; i < series6.getData().size(); i++) {
+            s_saved[i] = series6.getData().get(i).getYValue().floatValue();
+        }
+        g.gZ = s_saved;
+        writer.append(g.toString());
+        writer.close();
+    
+    }
+    private void readFile() throws FileNotFoundException, IOException{
+        
+    File file = new File("myfile.txt");
+    BufferedReader reader = new BufferedReader(new FileReader(file)); 
+    String st, s2[]; 
+    while ((st = reader.readLine()) != null){ 
+     s2 = st.split(";");
+     for(int i=0; i<s2.length; i++){
+         System.out.print(s2[i]+" "); 
+    }
+    System.out.println(); 
+    }
+
+    reader.close();
     }
 }

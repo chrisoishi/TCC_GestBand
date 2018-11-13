@@ -26,7 +26,7 @@ import javafx.scene.control.Label;
 public class MainController implements Initializable {
 
     @FXML
-    private GridPane panel_connect, panel_configure_wifi;
+    private GridPane panel_connect, panel_configure_wifi,panel_gesture;
     @FXML
     private TextField ssid, pass, ip;
 
@@ -39,6 +39,18 @@ public class MainController implements Initializable {
     private void show_panel_connection(ActionEvent event) {
         panel_connect.setVisible(true);
         panel_configure_wifi.setVisible(false);
+        panel_gesture.setVisible(false);
+    }
+    
+    @FXML
+    private void show_gesture(ActionEvent event) {
+        panel_gesture.setVisible(true);
+        panel_connect.setVisible(false);
+        panel_configure_wifi.setVisible(false);
+    }
+    
+    @FXML
+    private void show_saved_gesture(ActionEvent event) {
     }
 
     @FXML
