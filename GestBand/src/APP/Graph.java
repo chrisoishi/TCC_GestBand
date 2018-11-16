@@ -121,14 +121,7 @@ public class Graph {
             @Override
             public void handle(ActionEvent event) {
                 if (stop) {
-                    series1.getData().clear();
-                    series2.getData().clear();
-                    series3.getData().clear();
-                    series4.getData().clear();
-                    series5.getData().clear();
-                    series6.getData().clear();
-                    xSeriesData = 0;
-                    addDataToSeries();
+                    clear();
                 }
             }
         });
@@ -297,7 +290,7 @@ public class Graph {
         for (int i = 0; i < series6.getData().size(); i++) {
             s[5][i] = series6.getData().get(i).getYValue().floatValue();
         }
-        Gestures g = new Gestures(textField.getText(), s[0],s[1],s[2],s[3],s[4],s[5]);
+        Gestures g = new Gestures(textField.getText(), s[0], s[1], s[2], s[3], s[4], s[5]);
         Main.gestos.add(g);
         Main.saveGesture();
     }
@@ -315,10 +308,9 @@ public class Graph {
 
         addDataToSeries();
     }
-    
-    
-        private void testDTW() {
-        float[][] s = new float[6][100];
+
+    private void testDTW() {
+        float[][] s = new float[6][105];
         for (int i = 0; i < series1.getData().size(); i++) {
             s[0][i] = series1.getData().get(i).getYValue().floatValue();
         }
@@ -337,19 +329,35 @@ public class Graph {
         for (int i = 0; i < series6.getData().size(); i++) {
             s[5][i] = series6.getData().get(i).getYValue().floatValue();
         }
-        float m = 0;
-        for(int i = 0;i<Main.gestos.size();i++){
+        int m;
+        for (int i = 0; i < Main.gestos.size(); i++) {
+            m = 0;
             m += lDTW.compute(Main.gestos.get(i).acX, s[0]).getDistance();
             m += lDTW.compute(Main.gestos.get(i).acY, s[1]).getDistance();
             m += lDTW.compute(Main.gestos.get(i).acZ, s[2]).getDistance();
-            //m += lDTW.compute(Main.gestos.get(i).gX, s[3]).getDistance();
-            //m += lDTW.compute(Main.gestos.get(i).gY, s[4]).getDistance();
-            //m += lDTW.compute(Main.gestos.get(i).gZ, s[5]).getDistance();
-        }
-        m = m/3;
+            m += lDTW.compute(Main.gestos.get(i).gX, s[3]).getDistance();
+            m += lDTW.compute(Main.gestos.get(i).gY, s[4]).getDistance();
+            m += lDTW.compute(Main.gestos.get(i).gZ, s[5]).getDistance();
+            m = m / 6;
+            if (m < 20) {
+                clear();
+                System.out.println("Gesto:" + Main.gestos.get(i).name);
+            }
             System.out.println(m);
-        
+
+        }
+
     }
-        
-        
+
+    private void clear() {
+        series1.getData().clear();
+        series2.getData().clear();
+        series3.getData().clear();
+        series4.getData().clear();
+        series5.getData().clear();
+        series6.getData().clear();
+        xSeriesData = 0;
+        addDataToSeries();
+    }
+
 }

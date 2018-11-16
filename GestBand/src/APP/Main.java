@@ -90,7 +90,7 @@ public class Main extends Application {
         String st, s2[]; 
         String name = "";
         Gestures g;
-        float[][] temp = new float[10][100];
+        float[][] temp = new float[6][105];
         int count=0;
         while ((st = reader.readLine()) != null){
             if(count==0){
