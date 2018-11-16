@@ -20,6 +20,19 @@ public class Gestures {
     public float[] gX = new float[1];
     public float[] gY = new float[1];
     public float[] gZ = new float[1];
+    
+    public Gestures(String name,float[] acX, float[] acY, float[] acZ, float[] gX, float[] gY, float[] gZ ){
+        this.name= name;
+        this.acX = acX;
+        this.acY = acY;
+        this.acZ = acZ;
+        this.gX  = gX;
+        this.gY  = gY;
+        this.gZ  = gZ;
+    }
+
+    public Gestures() {
+    }
 
     public String toString() {
         String s = "";

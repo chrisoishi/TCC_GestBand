@@ -8,6 +8,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -59,16 +61,18 @@ public class Graph {
     Button btnSave = new Button();
     Button btnClear = new Button();
     Button btnTest = new Button();
+    Button btnRead = new Button();
     boolean stop = false;
 
     private DTW lDTW = new DTW();
     private boolean test_dtw = false;
 
+    TextField textField = new TextField();
+    TextField textField2 = new TextField();
+
     private void init(Stage primaryStage) {
 
         Label label1 = new Label("Name:");
-        TextField textField = new TextField();
-        TextField textField2 = new TextField();
 
         xAxis = new NumberAxis(0, MAX_DATA_POINTS, MAX_DATA_POINTS / 10);
         xAxis.setForceZeroInRange(false);
@@ -104,7 +108,7 @@ public class Graph {
             @Override
             public void handle(ActionEvent event) {
                 try {
-                    writeFile();
+                    saveGesture();
                 } catch (IOException ex) {
                     Logger.getLogger(Graph.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -149,13 +153,13 @@ public class Graph {
         final LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis) {
             // Override to remove symbols on each data point
             @Override
-            protected void dataItemAdded(Series<Number, Number> series, int itemIndex, Data<Number, Number> item) {
+            protected void dataItemAdded(XYChart.Series<Number, Number> series, int itemIndex, XYChart.Data<Number, Number> item) {
             }
         };
         final LineChart<Number, Number> lineChart1 = new LineChart<Number, Number>(xAxis1, yAxis1) {
             // Override to remove symbols on each data point
             @Override
-            protected void dataItemAdded(Series<Number, Number> series, int itemIndex, Data<Number, Number> item) {
+            protected void dataItemAdded(XYChart.Series<Number, Number> series, int itemIndex, XYChart.Data<Number, Number> item) {
             }
         };
 
@@ -179,7 +183,7 @@ public class Graph {
         lineChart.getData().addAll(series1, series2, series3);
         lineChart1.getData().addAll(series4, series5, series6);
 
-        root.getChildren().addAll(lineChart, lineChart1, btnStop, btnSave, btnClear, btnTest, textField, textField2);
+        root.getChildren().addAll(lineChart, lineChart1, btnStop, btnSave, btnClear, btnTest, btnRead, textField, textField2);
         Scene scene = new Scene(root, 1000, 600);
         primaryStage.setScene(scene);
 
@@ -272,53 +276,42 @@ public class Graph {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void writeFile() throws IOException {
-        File file = new File("myfile.txt");
-        FileWriter fw = new FileWriter(file, true);
-        BufferedWriter writer = new BufferedWriter(fw);
-        Gestures g = new Gestures();
-        g.name = "sdgsdgsd";
+    private void saveGesture() throws IOException {
+        float[][] s = new float[6][100];
         for (int i = 0; i < series1.getData().size(); i++) {
-            s_saved[i] = series1.getData().get(i).getYValue().floatValue();
+            s[0][i] = series1.getData().get(i).getYValue().floatValue();
         }
-        g.acX = s_saved;
         for (int i = 0; i < series2.getData().size(); i++) {
-            s_saved[i] = series2.getData().get(i).getYValue().floatValue();
+            s[1][i] = series2.getData().get(i).getYValue().floatValue();
         }
-        g.acY = s_saved;
         for (int i = 0; i < series3.getData().size(); i++) {
-            s_saved[i] = series3.getData().get(i).getYValue().floatValue();
+            s[2][i] = series3.getData().get(i).getYValue().floatValue();
         }
-        g.acZ = s_saved;
         for (int i = 0; i < series4.getData().size(); i++) {
-            s_saved[i] = series4.getData().get(i).getYValue().floatValue();
+            s[3][i] = series4.getData().get(i).getYValue().floatValue();
         }
-        g.gX = s_saved;
         for (int i = 0; i < series5.getData().size(); i++) {
-            s_saved[i] = series5.getData().get(i).getYValue().floatValue();
+            s[4][i] = series5.getData().get(i).getYValue().floatValue();
         }
-        g.gY = s_saved;
         for (int i = 0; i < series6.getData().size(); i++) {
-            s_saved[i] = series6.getData().get(i).getYValue().floatValue();
+            s[5][i] = series6.getData().get(i).getYValue().floatValue();
         }
-        g.gZ = s_saved;
-        writer.append(g.toString());
-        writer.close();
-    
-    }
-    private void readFile() throws FileNotFoundException, IOException{
-        
-    File file = new File("myfile.txt");
-    BufferedReader reader = new BufferedReader(new FileReader(file)); 
-    String st, s2[]; 
-    while ((st = reader.readLine()) != null){ 
-     s2 = st.split(";");
-     for(int i=0; i<s2.length; i++){
-         System.out.print(s2[i]+" "); 
-    }
-    System.out.println(); 
+        Gestures g = new Gestures(textField.getText(), s[0],s[1],s[2],s[3],s[4],s[5]);
+        Main.gestos.add(g);
+        Main.saveGesture();
     }
 
-    reader.close();
+    public void setGesture(Gestures g) {
+        for (int i = 0; i < g.acX.length; i++) {
+            dataQ1.add(g.acX[i]);
+            dataQ2.add(g.acY[i]);
+            dataQ3.add(g.acZ[i]);
+            dataQ4.add(g.gX[i]);
+            dataQ5.add(g.gY[i]);
+            dataQ6.add(g.gZ[i]);
+
+        }
+
+        addDataToSeries();
     }
 }

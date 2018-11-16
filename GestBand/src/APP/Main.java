@@ -7,12 +7,21 @@ package APP;
 
 import Controllers.*;
 import TCP.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Application;
+import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -29,6 +38,7 @@ public class Main extends Application {
     public static Parent root;
     public static URL w_graph;
     public static MainController controller;
+    public static List<Gestures> gestos = new ArrayList<>();
 
     public static boolean CONNECTION = false;
 
@@ -53,12 +63,64 @@ public class Main extends Application {
         stage.show();
         Main.Graph = new Graph();
         
-                Gestures g = new Gestures();
+        Gestures g = new Gestures();
 
         g.name = "sdgsdgsd";
         System.out.println(g.toString());
 
     }
+    
+    public static void saveGesture() throws IOException {
+        File file = new File("myfile.txt");
+        FileWriter fw = new FileWriter(file);
+        BufferedWriter writer = new BufferedWriter(fw);
+        
+        for(int i=0;i<gestos.size();i++){
+            writer.append(gestos.get(i).toString());
+        }
+        writer.close();
+
+    }
+    
+    
+    public static void getGestures() throws FileNotFoundException, IOException{
+        gestos.clear();
+        File file = new File("myfile.txt");
+        BufferedReader reader = new BufferedReader(new FileReader(file)); 
+        String st, s2[]; 
+        String name = "";
+        Gestures g;
+        float[][] temp = new float[10][100];
+        int count=0;
+        while ((st = reader.readLine()) != null){
+            if(count==0){
+                name = st;
+                System.out.println(st);
+            }
+            else{
+                s2 = st.split(";");
+                for(int i=0; i<s2.length; i++){
+                    
+                    temp[count-1][i] = Float.parseFloat(s2[i]);
+                    System.out.print(temp[count-1][i]+" ");
+                }
+                
+                System.out.println(); 
+            }
+            if(count==6){
+                count=0;
+                g = new Gestures(name,temp[0],temp[1],temp[2],temp[3],temp[4],temp[5]);
+                gestos.add(g);
+
+            }
+            else
+                count++;
+        }
+        
+
+        reader.close();
+    }
+    
 
     public static void show_graph() throws IOException {
         FXMLLoader loader  = new FXMLLoader(w_graph);
@@ -113,7 +175,7 @@ public class Main extends Application {
     public static void main(String[] args) throws IOException {
 
         
-        launch(args);
+        launch(args); 
 
     }
 

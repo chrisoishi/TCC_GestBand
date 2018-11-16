@@ -20,6 +20,9 @@ import javafx.scene.layout.GridPane;
 import APP.Main;
 import static java.lang.System.in;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
@@ -28,7 +31,7 @@ import javafx.scene.control.Label;
  * @author rodri
  */
 public class MainController implements Initializable {
-
+    Gestures g;
     @FXML
     private GridPane panel_connect, panel_configure_wifi, panel_gesture;
     @FXML
@@ -47,30 +50,37 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void show_gesture(ActionEvent event) {
+    private void show_gesture(ActionEvent event) throws IOException {
         panel_gesture.setVisible(true);
         panel_connect.setVisible(false);
         panel_configure_wifi.setVisible(false);
-        ArrayList<Gestures> gestures = new ArrayList<Gestures>();
-        Gestures g = new Gestures();
-        g.name = "chris";
-        gestures.add(g);
-        g = new Gestures();
-        g.name = "oishi";
-        gestures.add(g);
+        Main.getGestures();
+        
         Label l = new Label();
         Button b = new Button();
-        b.setText("Mostrar");
-        l.setText(s);
-        for (int i = 0; i < gestures.size(); i++) {
-            g = gestures.get(i);
+
+        for (int i = 0; i < Main.gestos.size(); i++) {
+            g = Main.gestos.get(i);
             l = new Label();
             l.setText(g.name);
             b = new Button();
-            b.setPrefWidth(panel_gesture.getWidth()/2);
-             b.setText("Mostrar");
-            panel_gesture.add(l, 0, i+1);
-            panel_gesture.add(b, 1, i+1);
+            b.setPrefWidth(panel_gesture.getWidth() / 2);
+            b.setText("Mostrar");
+            b.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    try {
+                        Gestures g2 = g;
+                        Main.show_graph();
+                        Main.Graph.setGesture(g2);
+                    } catch (IOException ex) {
+                        Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    
+                }
+            });
+            panel_gesture.add(l, 0, i + 1);
+            panel_gesture.add(b, 1, i + 1);
         }
         //panel_gesture.set
     }
