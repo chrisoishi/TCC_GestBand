@@ -268,6 +268,7 @@ public class Graph {
                 dataQ4.add(Integer.valueOf(s2[1]));
                 dataQ5.add(Integer.valueOf(s2[2]));
                 dataQ6.add(Integer.valueOf(s2[3]));
+                testDTW();
             }
         }
     }
@@ -314,4 +315,41 @@ public class Graph {
 
         addDataToSeries();
     }
+    
+    
+        private void testDTW() {
+        float[][] s = new float[6][100];
+        for (int i = 0; i < series1.getData().size(); i++) {
+            s[0][i] = series1.getData().get(i).getYValue().floatValue();
+        }
+        for (int i = 0; i < series2.getData().size(); i++) {
+            s[1][i] = series2.getData().get(i).getYValue().floatValue();
+        }
+        for (int i = 0; i < series3.getData().size(); i++) {
+            s[2][i] = series3.getData().get(i).getYValue().floatValue();
+        }
+        for (int i = 0; i < series4.getData().size(); i++) {
+            s[3][i] = series4.getData().get(i).getYValue().floatValue();
+        }
+        for (int i = 0; i < series5.getData().size(); i++) {
+            s[4][i] = series5.getData().get(i).getYValue().floatValue();
+        }
+        for (int i = 0; i < series6.getData().size(); i++) {
+            s[5][i] = series6.getData().get(i).getYValue().floatValue();
+        }
+        float m = 0;
+        for(int i = 0;i<Main.gestos.size();i++){
+            m += lDTW.compute(Main.gestos.get(i).acX, s[0]).getDistance();
+            m += lDTW.compute(Main.gestos.get(i).acY, s[1]).getDistance();
+            m += lDTW.compute(Main.gestos.get(i).acZ, s[2]).getDistance();
+            //m += lDTW.compute(Main.gestos.get(i).gX, s[3]).getDistance();
+            //m += lDTW.compute(Main.gestos.get(i).gY, s[4]).getDistance();
+            //m += lDTW.compute(Main.gestos.get(i).gZ, s[5]).getDistance();
+        }
+        m = m/3;
+            System.out.println(m);
+        
+    }
+        
+        
 }
