@@ -1,17 +1,9 @@
 package APP;
 
-import TCP.*;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+
 import javafx.animation.AnimationTimer;
-import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -33,7 +25,7 @@ import javafx.scene.layout.FlowPane;
 
 public class Graph {
 
-    private static final int MAX_DATA_POINTS = 100;
+    private static final int MAX_DATA_POINTS = 40;
     private int xSeriesData = 0;
     private XYChart.Series<Number, Number> series1 = new XYChart.Series<>();
     private XYChart.Series<Number, Number> series2 = new XYChart.Series<>();
@@ -69,6 +61,9 @@ public class Graph {
 
     TextField textField = new TextField();
     TextField textField2 = new TextField();
+
+    TextField txtBegin = new TextField();
+    TextField txtEnd = new TextField();
 
     private void init(Stage primaryStage) {
 
@@ -176,7 +171,7 @@ public class Graph {
         lineChart.getData().addAll(series1, series2, series3);
         lineChart1.getData().addAll(series4, series5, series6);
 
-        root.getChildren().addAll(lineChart, lineChart1, btnStop, btnSave, btnClear, btnTest, btnRead, textField, textField2);
+        root.getChildren().addAll(lineChart, lineChart1, btnStop, btnSave, btnClear, btnTest, btnRead, textField, textField2, txtBegin, txtEnd);
         Scene scene = new Scene(root, 1000, 600);
         primaryStage.setScene(scene);
 
@@ -271,24 +266,17 @@ public class Graph {
     }
 
     private void saveGesture() throws IOException {
-        float[][] s = new float[6][100];
-        for (int i = 0; i < series1.getData().size(); i++) {
-            s[0][i] = series1.getData().get(i).getYValue().floatValue();
-        }
-        for (int i = 0; i < series2.getData().size(); i++) {
-            s[1][i] = series2.getData().get(i).getYValue().floatValue();
-        }
-        for (int i = 0; i < series3.getData().size(); i++) {
-            s[2][i] = series3.getData().get(i).getYValue().floatValue();
-        }
-        for (int i = 0; i < series4.getData().size(); i++) {
-            s[3][i] = series4.getData().get(i).getYValue().floatValue();
-        }
-        for (int i = 0; i < series5.getData().size(); i++) {
-            s[4][i] = series5.getData().get(i).getYValue().floatValue();
-        }
-        for (int i = 0; i < series6.getData().size(); i++) {
-            s[5][i] = series6.getData().get(i).getYValue().floatValue();
+        int end = Integer.parseInt(txtEnd.getText());
+        int begin = Integer.parseInt(txtBegin.getText());
+        int size = end - begin;
+        float[][] s = new float[6][size];
+        for (int i = begin; i < end; i++) {
+            s[0][i - begin] = series1.getData().get(i).getYValue().floatValue();
+            s[1][i - begin] = series2.getData().get(i).getYValue().floatValue();
+            s[2][i - begin] = series3.getData().get(i).getYValue().floatValue();
+            s[3][i - begin] = series4.getData().get(i).getYValue().floatValue();
+            s[4][i - begin] = series5.getData().get(i).getYValue().floatValue();
+            s[5][i - begin] = series6.getData().get(i).getYValue().floatValue();
         }
         Gestures g = new Gestures(textField.getText(), s[0], s[1], s[2], s[3], s[4], s[5]);
         Main.gestos.add(g);
@@ -340,7 +328,7 @@ public class Graph {
             m += lDTW.compute(Main.gestos.get(i).gZ, s[5]).getDistance();
             m = m / 6;
             if (m < 20) {
-                clear();
+                //clear();
                 System.out.println("Gesto:" + Main.gestos.get(i).name);
             }
             System.out.println(m);
@@ -349,6 +337,7 @@ public class Graph {
 
     }
 
+   
     private void clear() {
         series1.getData().clear();
         series2.getData().clear();

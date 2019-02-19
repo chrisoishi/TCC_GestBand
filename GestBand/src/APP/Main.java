@@ -62,82 +62,77 @@ public class Main extends Application {
         });
         stage.show();
         Main.Graph = new Graph();
-        
+
         Gestures g = new Gestures();
 
         g.name = "sdgsdgsd";
         System.out.println(g.toString());
 
     }
-    
+
     public static void saveGesture() throws IOException {
         File file = new File("myfile.txt");
         FileWriter fw = new FileWriter(file);
         BufferedWriter writer = new BufferedWriter(fw);
-        
-        for(int i=0;i<gestos.size();i++){
+
+        for (int i = 0; i < gestos.size(); i++) {
             writer.append(gestos.get(i).toString());
         }
         writer.close();
 
     }
-    
-    
-    public static void getGestures() throws FileNotFoundException, IOException{
+
+    public static void getGestures() throws FileNotFoundException, IOException {
         gestos.clear();
         File file = new File("myfile.txt");
-        BufferedReader reader = new BufferedReader(new FileReader(file)); 
-        String st, s2[]; 
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        String st, s2[];
         String name = "";
         Gestures g;
-        float[][] temp = new float[6][105];
-        int count=0;
-        while ((st = reader.readLine()) != null){
-            if(count==0){
+        float[][] temp = new float[6][30];
+        int count = 0;
+        while ((st = reader.readLine()) != null) {
+            if (count == 0) {
                 name = st;
                 System.out.println(st);
-            }
-            else{
+            } else {
                 s2 = st.split(";");
-                for(int i=0; i<s2.length; i++){
-                    
-                    temp[count-1][i] = Float.parseFloat(s2[i]);
-                    System.out.print(temp[count-1][i]+" ");
+                for (int i = 0; i < s2.length; i++) {
+
+                    temp[count - 1][i] = Float.parseFloat(s2[i]);
+                    System.out.print(temp[count - 1][i] + " ");
                 }
-                
-                System.out.println(); 
+
+                System.out.println();
             }
-            if(count==6){
-                count=0;
-                g = new Gestures(name,temp[0],temp[1],temp[2],temp[3],temp[4],temp[5]);
+            if (count == 6) {
+                count = 0;
+                g = new Gestures(name, temp[0], temp[1], temp[2], temp[3], temp[4], temp[5]);
                 gestos.add(g);
 
-            }
-            else
+            } else {
                 count++;
+            }
         }
-        
 
         reader.close();
     }
-    
 
     public static void show_graph() throws IOException {
-        FXMLLoader loader  = new FXMLLoader(w_graph);
+        FXMLLoader loader = new FXMLLoader(w_graph);
         Main.Graph = new Graph();
-        
+
         Scene scene = new Scene(loader.load());
         Stage stage = new Stage();
         stage.setScene(scene);
-        stage.setOnCloseRequest(WindowEvent ->
-        {
+        stage.setOnCloseRequest(WindowEvent
+                -> {
             try {
                 ClientInSocket.send("stop;|");
             } catch (IOException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
-            
+
         });
         Graph.start(stage);
 
@@ -170,12 +165,11 @@ public class Main extends Application {
         }
     }
 
-
+    
 
     public static void main(String[] args) throws IOException {
 
-        
-        launch(args); 
+        launch(args);
 
     }
 
