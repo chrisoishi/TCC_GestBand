@@ -100,10 +100,10 @@ public class Main extends Application {
                 for (int i = 0; i < s2.length; i++) {
 
                     temp[count - 1][i] = Float.parseFloat(s2[i]);
-                    System.out.print(temp[count - 1][i] + " ");
+                   // System.out.print(temp[count - 1][i] + " ");
                 }
 
-                System.out.println();
+               // System.out.println();
             }
             if (count == 6) {
                 count = 0;

@@ -53,12 +53,13 @@ public class MainController implements Initializable {
     private void show_gesture(ActionEvent event) throws IOException {
         panel_gesture.setVisible(true);
         panel_connect.setVisible(false);
+        panel_gesture.getChildren().clear();
+        System.out.println(panel_gesture.getChildren().size());
         panel_configure_wifi.setVisible(false);
         Main.getGestures();
         
         Label l = new Label();
         Button b = new Button();
-
         for (int i = 0; i < Main.gestos.size(); i++) {
             g = Main.gestos.get(i);
             l = new Label();
@@ -79,8 +80,27 @@ public class MainController implements Initializable {
                     
                 }
             });
+   
             panel_gesture.add(l, 0, i + 1);
             panel_gesture.add(b, 1, i + 1);
+                     b = new Button();
+            b.setPrefWidth(panel_gesture.getWidth() / 2);
+            
+            b.setText("Delete");
+                        b.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    Gestures g2 = g;
+                    Main.gestos.remove(g);
+                    try {
+                        Main.saveGesture();
+                    } catch (IOException ex) {
+                        Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    
+                }
+            });
+            panel_gesture.add(b, 2, i + 1);
         }
         //panel_gesture.set
     }
