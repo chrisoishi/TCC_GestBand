@@ -39,6 +39,7 @@ public class Main extends Application {
     public static URL w_graph;
     public static MainController controller;
     public static List<Gestures> gestos = new ArrayList<>();
+    public static DTW lDTW = new DTW();
 
     public static boolean CONNECTION = false;
 
@@ -164,7 +165,26 @@ public class Main extends Application {
 
         }
     }
+    public static void testDTW(float[][] data) {
+        float[][] s = data;
+        int m;
+        for (int i = 0; i < Main.gestos.size(); i++) {
+            m = 0;
+            m += lDTW.compute(Main.gestos.get(i).acX, s[0]).getDistance();
+            m += lDTW.compute(Main.gestos.get(i).acY, s[1]).getDistance();
+            m += lDTW.compute(Main.gestos.get(i).acZ, s[2]).getDistance();
+            m += lDTW.compute(Main.gestos.get(i).gX, s[3]).getDistance();
+            m += lDTW.compute(Main.gestos.get(i).gY, s[4]).getDistance();
+            m += lDTW.compute(Main.gestos.get(i).gZ, s[5]).getDistance();
+            m = m / 6;
+            if (m < 20) {
+                //clear();
+                System.out.println("Gesto:" + Main.gestos.get(i).name);
+            }
+            System.out.println(m);
 
+        }
+    }
     
 
     public static void main(String[] args) throws IOException {
