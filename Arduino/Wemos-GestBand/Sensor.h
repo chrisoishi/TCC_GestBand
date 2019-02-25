@@ -11,5 +11,13 @@ void read_sensor(){
       GyX=Wire.read()<<8|Wire.read();  // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
       GyY=Wire.read()<<8|Wire.read();  // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
       GyZ=Wire.read()<<8|Wire.read();  // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
+      if(AcX != 0 || AcY != 0 || AcZ != 0){ 
+        AcX=AcX/sensor_range;
+        AcY=AcY/sensor_range;
+        AcZ=AcZ/sensor_range;
+        GyX=GyX/sensor_range;
+        GyY=GyY/sensor_range;
+        GyZ=GyZ/sensor_range;
+      }
     }
 }

@@ -87,9 +87,10 @@ public class Main extends Application {
         File file = new File("myfile.txt");
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String st, s2[];
+        s2 = new String[1];
         String name = "";
         Gestures g;
-        float[][] temp = new float[6][30];
+        float[][] temp = new float[6][200];
         int count = 0;
         while ((st = reader.readLine()) != null) {
             if (count == 0) {
@@ -100,14 +101,15 @@ public class Main extends Application {
                 for (int i = 0; i < s2.length; i++) {
 
                     temp[count - 1][i] = Float.parseFloat(s2[i]);
-                   // System.out.print(temp[count - 1][i] + " ");
+                    // System.out.print(temp[count - 1][i] + " ");
                 }
 
-               // System.out.println();
+                // System.out.println();
             }
             if (count == 6) {
                 count = 0;
-                g = new Gestures(name, temp[0], temp[1], temp[2], temp[3], temp[4], temp[5]);
+                System.out.println("Size:" + s2.length);
+                g = new Gestures(name, s2.length, temp[0], temp[1], temp[2], temp[3], temp[4], temp[5]);
                 gestos.add(g);
 
             } else {
@@ -127,12 +129,13 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.setOnCloseRequest(WindowEvent
                 -> {
-            try {
-                ClientInSocket.send("stop;|");
-            } catch (IOException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            if (CONNECTION) {
+                try {
+                    ClientInSocket.send("stop;|");
+                } catch (IOException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-
         });
         Graph.start(stage);
 
@@ -152,6 +155,10 @@ public class Main extends Application {
         CONNECTION = ClientInSocket.Start(actionsReceive, ip);
     }
 
+    public static void testDTW() {
+
+    }
+
     private static void handler_receive(String s) {
         String data[] = s.split(";");
         switch (data[0]) {
@@ -164,8 +171,6 @@ public class Main extends Application {
 
         }
     }
-
-    
 
     public static void main(String[] args) throws IOException {
 

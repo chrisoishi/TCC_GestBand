@@ -30,6 +30,7 @@ void text_center(int y,String text){
     OLED.print(text);
 }
 
+
 void screen_change(int s){
   screen_active = s;
   screen_refresh = true;
@@ -74,7 +75,7 @@ void screen_wake(){
 void screen_logo(){
   OLED.clearDisplay();
   OLED.setCursor(0,0);
-  OLED.drawBitmap(0, 0, bmp_gestband, 128, 32, 1);
+  OLED.drawBitmap(0, 16, bmp_gestband, 128, 32, 1);
   //OLED.display();
 }
 
@@ -139,16 +140,16 @@ void screen_top_bar(){
 }
 
 void screen_ip(){
-  clear_pixel(0,8,128,32);
+  clear_pixel(0,8,128,56);
   
   if(wifi_access_point){
-    text_center(10,"WiFi: GestBand");
-    text_center(20,"GB IP:"+WiFi.softAPIP().toString());
+    text_center(27,"WiFi: GestBand");
+    text_center(37,"GB IP:"+WiFi.softAPIP().toString());
   }
   else {
-    if(!gb_client)text_center(10,"Connect APP to");
-    else text_center(10,"GestBand");
-    text_center(20,"IP:"+WiFi.localIP().toString());
+    if(!gb_client)text_center(27,"Connect APP to");
+    else text_center(27,"GestBand");
+    text_center(37,"IP:"+WiFi.localIP().toString());
   }
   screen_refresh = false;
   //OLED.display();
@@ -157,24 +158,24 @@ void screen_ip(){
 void screen_sensor(){
   gb_read_sensor = true;
   screen_update = true;
-  clear_pixel(0,8,128,24);
-  OLED.setCursor(0,10);
+  clear_pixel(0,8,128,56);
+  OLED.setCursor(0,27);
   OLED.print("Ac:");
-  OLED.setCursor(20,10);
-  OLED.print(AcX/500);
-  OLED.setCursor(50,10);
-  OLED.print(AcY/500);
-  OLED.setCursor(80,10);
-  OLED.print(AcZ/500);
+  OLED.setCursor(20,27);
+  OLED.print(AcX);
+  OLED.setCursor(50,27);
+  OLED.print(AcY);
+  OLED.setCursor(80,27);
+  OLED.print(AcZ);
   
-  OLED.setCursor(0,20);
+  OLED.setCursor(0,37);
   OLED.print("Gy:");
-  OLED.setCursor(20,20);
-  OLED.print(GyX/500);
-  OLED.setCursor(50,20);
-  OLED.print(GyY/500);
-  OLED.setCursor(80,20);
-  OLED.print(GyZ/500);
+  OLED.setCursor(20,37);
+  OLED.print(GyX);
+  OLED.setCursor(50,37);
+  OLED.print(GyY);
+  OLED.setCursor(80,37);
+  OLED.print(GyZ);
   
   //OLED.display();
   //screen_refresh = false;

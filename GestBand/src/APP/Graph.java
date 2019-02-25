@@ -1,6 +1,5 @@
 package APP;
 
-
 import java.io.IOException;
 
 import javafx.animation.AnimationTimer;
@@ -25,7 +24,7 @@ import javafx.scene.layout.FlowPane;
 
 public class Graph {
 
-    private static final int MAX_DATA_POINTS = 40;
+    private static final int MAX_DATA_POINTS = 200;
     private int xSeriesData = 0;
     private XYChart.Series<Number, Number> series1 = new XYChart.Series<>();
     private XYChart.Series<Number, Number> series2 = new XYChart.Series<>();
@@ -55,6 +54,7 @@ public class Graph {
     Button btnTest = new Button();
     Button btnRead = new Button();
     boolean stop = false;
+    boolean test = false;
 
     private DTW lDTW = new DTW();
     private boolean test_dtw = false;
@@ -90,6 +90,7 @@ public class Graph {
             public void handle(ActionEvent event) {
 
                 if (stop) {
+                    clear();
                     stop = false;
                 } else {
                     stop = true;
@@ -126,11 +127,12 @@ public class Graph {
 
             @Override
             public void handle(ActionEvent event) {
-                for (int i = 0; i < series1.getData().size(); i++) {
-                    s_test[i] = series1.getData().get(i).getYValue().floatValue();
+                
+                                if (test) {
+                    test = false;
+                } else {
+                    test = true;
                 }
-
-                System.out.println(lDTW.compute(s_test, s_saved).getDistance());
             }
         });
 
@@ -171,7 +173,7 @@ public class Graph {
         lineChart.getData().addAll(series1, series2, series3);
         lineChart1.getData().addAll(series4, series5, series6);
 
-        root.getChildren().addAll(lineChart, lineChart1, btnStop, btnSave, btnClear, btnTest, btnRead, textField, textField2, txtBegin, txtEnd);
+        root.getChildren().addAll(lineChart, lineChart1, btnStop, btnSave, btnClear, btnTest, btnRead, textField, txtBegin, txtEnd);
         Scene scene = new Scene(root, 1000, 600);
         primaryStage.setScene(scene);
 
@@ -278,7 +280,7 @@ public class Graph {
             s[4][i - begin] = series5.getData().get(i).getYValue().floatValue();
             s[5][i - begin] = series6.getData().get(i).getYValue().floatValue();
         }
-        Gestures g = new Gestures(textField.getText(), s[0], s[1], s[2], s[3], s[4], s[5]);
+        Gestures g = new Gestures(textField.getText(), size, s[0], s[1], s[2], s[3], s[4], s[5]);
         Main.gestos.add(g);
         Main.saveGesture();
     }
@@ -297,47 +299,48 @@ public class Graph {
         addDataToSeries();
     }
 
-    private void testDTW() {
-        float[][] s = new float[6][105];
-        for (int i = 0; i < series1.getData().size(); i++) {
-            s[0][i] = series1.getData().get(i).getYValue().floatValue();
+    private float[][] getData(int size) {
+        float[][] s = new float[6][size];
+        int size_serie = series1.getData().size() - size;
+        for (int i = 0; i < size - 2; i++) {
+            s[0][i] = series1.getData().get(size_serie + i).getYValue().floatValue();
+            s[1][i] = series2.getData().get(size_serie + i).getYValue().floatValue();
+            s[2][i] = series3.getData().get(size_serie + i).getYValue().floatValue();
+            s[3][i] = series4.getData().get(size_serie + i).getYValue().floatValue();
+            s[4][i] = series5.getData().get(size_serie + i).getYValue().floatValue();
+            s[5][i] = series6.getData().get(size_serie + i).getYValue().floatValue();
         }
-        for (int i = 0; i < series2.getData().size(); i++) {
-            s[1][i] = series2.getData().get(i).getYValue().floatValue();
-        }
-        for (int i = 0; i < series3.getData().size(); i++) {
-            s[2][i] = series3.getData().get(i).getYValue().floatValue();
-        }
-        for (int i = 0; i < series4.getData().size(); i++) {
-            s[3][i] = series4.getData().get(i).getYValue().floatValue();
-        }
-        for (int i = 0; i < series5.getData().size(); i++) {
-            s[4][i] = series5.getData().get(i).getYValue().floatValue();
-        }
-        for (int i = 0; i < series6.getData().size(); i++) {
-            s[5][i] = series6.getData().get(i).getYValue().floatValue();
-        }
-        int m;
-        for (int i = 0; i < Main.gestos.size(); i++) {
-            m = 0;
-            m += lDTW.compute(Main.gestos.get(i).acX, s[0]).getDistance();
-            m += lDTW.compute(Main.gestos.get(i).acY, s[1]).getDistance();
-            m += lDTW.compute(Main.gestos.get(i).acZ, s[2]).getDistance();
-            m += lDTW.compute(Main.gestos.get(i).gX, s[3]).getDistance();
-            m += lDTW.compute(Main.gestos.get(i).gY, s[4]).getDistance();
-            m += lDTW.compute(Main.gestos.get(i).gZ, s[5]).getDistance();
-            m = m / 6;
-            if (m < 20) {
-                //clear();
-                System.out.println("Gesto:" + Main.gestos.get(i).name);
-            }
-            System.out.println(m);
-
-        }
-
+        return s;
     }
 
-   
+    private void testDTW() {
+        if (test) {
+            int size;
+            int m;
+            float[][] s;
+            for (int i = 0; i < Main.gestos.size(); i++) {
+                if (series1.getData().size()+1 > Main.gestos.get(i).size) {
+                    s = getData(Main.gestos.get(i).size);
+                    m = 0;
+                    m += lDTW.compute(Main.gestos.get(i).acX, s[0]).getDistance();
+                    m += lDTW.compute(Main.gestos.get(i).acY, s[1]).getDistance();
+                    m += lDTW.compute(Main.gestos.get(i).acZ, s[2]).getDistance();
+                    m += lDTW.compute(Main.gestos.get(i).gX, s[3]).getDistance();
+                    m += lDTW.compute(Main.gestos.get(i).gY, s[4]).getDistance();
+                    m += lDTW.compute(Main.gestos.get(i).gZ, s[5]).getDistance();
+                    m = m / 6;
+                    if (m < 10) {
+                        
+                        System.out.println("Gesto:" + Main.gestos.get(i).name);
+                        clear();
+                    }
+                    //System.out.println(Main.gestos.get(i).name+':'+m);
+                }
+
+            }
+        }
+    }
+
     private void clear() {
         series1.getData().clear();
         series2.getData().clear();

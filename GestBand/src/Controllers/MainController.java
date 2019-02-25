@@ -53,8 +53,6 @@ public class MainController implements Initializable {
     private void show_gesture(ActionEvent event) throws IOException {
         panel_gesture.setVisible(true);
         panel_connect.setVisible(false);
-        panel_gesture.getChildren().clear();
-        System.out.println(panel_gesture.getChildren().size());
         panel_configure_wifi.setVisible(false);
         Main.getGestures();
         
