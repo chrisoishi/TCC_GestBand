@@ -334,7 +334,7 @@ public class Graph {
                         System.out.println("Gesto:" + Main.gestos.get(i).name);
                         clear();
                     }
-                    //System.out.println(Main.gestos.get(i).name+':'+m);
+                    System.out.println(Main.gestos.get(i).name+':'+m);
                 }
 
             }
