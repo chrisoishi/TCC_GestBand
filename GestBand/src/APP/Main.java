@@ -98,13 +98,11 @@ public class Main extends Application {
             if (count == 0) {
                 temp = new float[6][200];
                 name = st;
-                //System.out.println(st);
             } else {
                 s2 = st.split(";");
                 for (int i = 0; i < s2.length; i++) {
 
                     temp[count - 1][i] = Float.parseFloat(s2[i]);
-                   // System.out.print(temp[count - 1][i] + " ");
                 }
 
                 
@@ -113,8 +111,6 @@ public class Main extends Application {
                 count = 0;
                 g = new Gestures(name, s2.length,temp[0], temp[1], temp[2], temp[3], temp[4], temp[5]);
                 gestos.add(g);
-                                            System.out.println(gestos);
-                                            //System.out.println(gestos.get(0));
             } else {
                 count++;
             }

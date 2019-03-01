@@ -22,6 +22,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
+
 public class Graph {
 
     private static final int MAX_DATA_POINTS = 200;
@@ -127,8 +131,8 @@ public class Graph {
 
             @Override
             public void handle(ActionEvent event) {
-                
-                                if (test) {
+
+                if (test) {
                     test = false;
                 } else {
                     test = true;
@@ -248,8 +252,8 @@ public class Graph {
     }
 
     public void print(String s) {
-        s2 = s.split(":");
         if (!stop) {
+            s2 = s.split(":");
             if (s2[0].equals("A")) {
                 dataQ1.add(Integer.valueOf(s2[1]));
                 dataQ2.add(Integer.valueOf(s2[2]));
@@ -258,8 +262,10 @@ public class Graph {
                 dataQ4.add(Integer.valueOf(s2[1]));
                 dataQ5.add(Integer.valueOf(s2[2]));
                 dataQ6.add(Integer.valueOf(s2[3]));
-                testDTW();
+                 
+                 testDTW();
             }
+           
         }
     }
 
@@ -302,24 +308,31 @@ public class Graph {
     private float[][] getData(int size) {
         float[][] s = new float[6][size];
         int size_serie = series1.getData().size() - size;
+        if(size_serie < 0 )size_serie=0;
         for (int i = 0; i < size - 2; i++) {
+            if((size_serie + i)<200){
             s[0][i] = series1.getData().get(size_serie + i).getYValue().floatValue();
             s[1][i] = series2.getData().get(size_serie + i).getYValue().floatValue();
             s[2][i] = series3.getData().get(size_serie + i).getYValue().floatValue();
             s[3][i] = series4.getData().get(size_serie + i).getYValue().floatValue();
             s[4][i] = series5.getData().get(size_serie + i).getYValue().floatValue();
             s[5][i] = series6.getData().get(size_serie + i).getYValue().floatValue();
+            }
+            else{
+                //System.out.println("erros");
+            }
         }
         return s;
     }
 
     private void testDTW() {
         if (test) {
+            
             int size;
             int m;
             float[][] s;
             for (int i = 0; i < Main.gestos.size(); i++) {
-                if (series1.getData().size()+1 > Main.gestos.get(i).size) {
+                if (series1.getData().size() + 1 > Main.gestos.get(i).size) {
                     s = getData(Main.gestos.get(i).size);
                     m = 0;
                     m += lDTW.compute(Main.gestos.get(i).acX, s[0]).getDistance();
@@ -330,19 +343,29 @@ public class Graph {
                     m += lDTW.compute(Main.gestos.get(i).gZ, s[5]).getDistance();
                     m = m / 6;
                     if (m < 10) {
-                        try{
-                            Simulation.pressSpace();
-                        }catch(Exception e){
-                            
-                        }
                         System.out.println("Gesto:" + Main.gestos.get(i).name);
                         clear();
+                        pressSpace();
                     }
-                    System.out.println(m);
+                    //System.out.println(m);
                 }
 
             }
         }
+    }
+
+    public static void pressSpace() {
+
+        Robot robot;
+        try {
+            robot = new Robot();
+            robot.keyPress(KeyEvent.VK_SPACE);
+            robot.delay(100);
+            robot.keyRelease(KeyEvent.VK_SPACE);
+        } catch (AWTException ex) {
+            Logger.getLogger(Graph.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     private void clear() {
