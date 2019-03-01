@@ -89,12 +89,14 @@ public class Main extends Application {
         String st, s2[];
         String name = "";
         Gestures g;
-        float[][] temp = new float[6][30];
+        float[][] temp = new float[6][30];;
         int count = 0;
         while ((st = reader.readLine()) != null) {
+            
             if (count == 0) {
+                temp = new float[6][30];
                 name = st;
-                System.out.println(st);
+                //System.out.println(st);
             } else {
                 s2 = st.split(";");
                 for (int i = 0; i < s2.length; i++) {
@@ -103,13 +105,14 @@ public class Main extends Application {
                    // System.out.print(temp[count - 1][i] + " ");
                 }
 
-               // System.out.println();
+                
             }
             if (count == 6) {
                 count = 0;
                 g = new Gestures(name, temp[0], temp[1], temp[2], temp[3], temp[4], temp[5]);
                 gestos.add(g);
-
+                                            System.out.println(gestos);
+                                            //System.out.println(gestos.get(0));
             } else {
                 count++;
             }
