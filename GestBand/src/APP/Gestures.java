@@ -32,6 +32,15 @@ public class Gestures {
         this.gY  = gY;
         this.gZ  = gZ;
     }
+        public Gestures(String name,float[][] data){
+        this.name= name;
+        this.acX = data[0];
+        this.acY = data[1];
+        this.acZ = data[2];
+        this.gX  = data[3];
+        this.gY  = data[4];
+        this.gZ  = data[5];
+    }
 
     public Gestures() {
     }

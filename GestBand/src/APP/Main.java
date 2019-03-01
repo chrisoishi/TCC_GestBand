@@ -39,6 +39,7 @@ public class Main extends Application {
     public static URL w_graph;
     public static MainController controller;
     public static List<Gestures> gestos = new ArrayList<>();
+    public static DTW lDTW = new DTW();
 
     public static boolean CONNECTION = false;
 
@@ -87,31 +88,32 @@ public class Main extends Application {
         File file = new File("myfile.txt");
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String st, s2[];
-        s2 = new String[1];
         String name = "";
         Gestures g;
-        float[][] temp = new float[6][200];
+        float[][] temp = new float[6][30];;
         int count = 0;
         while ((st = reader.readLine()) != null) {
+            
             if (count == 0) {
+                temp = new float[6][30];
                 name = st;
-                System.out.println(st);
+                //System.out.println(st);
             } else {
                 s2 = st.split(";");
                 for (int i = 0; i < s2.length; i++) {
 
                     temp[count - 1][i] = Float.parseFloat(s2[i]);
-                    // System.out.print(temp[count - 1][i] + " ");
+                   // System.out.print(temp[count - 1][i] + " ");
                 }
 
-                // System.out.println();
+                
             }
             if (count == 6) {
                 count = 0;
-                System.out.println("Size:" + s2.length);
-                g = new Gestures(name, s2.length, temp[0], temp[1], temp[2], temp[3], temp[4], temp[5]);
+                g = new Gestures(name, temp[0], temp[1], temp[2], temp[3], temp[4], temp[5]);
                 gestos.add(g);
-
+                                            System.out.println(gestos);
+                                            //System.out.println(gestos.get(0));
             } else {
                 count++;
             }
@@ -129,13 +131,12 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.setOnCloseRequest(WindowEvent
                 -> {
-            if (CONNECTION) {
-                try {
-                    ClientInSocket.send("stop;|");
-                } catch (IOException ex) {
-                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            try {
+                ClientInSocket.send("stop;|");
+            } catch (IOException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
+
         });
         Graph.start(stage);
 
@@ -155,10 +156,6 @@ public class Main extends Application {
         CONNECTION = ClientInSocket.Start(actionsReceive, ip);
     }
 
-    public static void testDTW() {
-
-    }
-
     private static void handler_receive(String s) {
         String data[] = s.split(";");
         switch (data[0]) {
@@ -171,6 +168,27 @@ public class Main extends Application {
 
         }
     }
+    public static void testDTW(float[][] data) {
+        float[][] s = data;
+        int m;
+        for (int i = 0; i < Main.gestos.size(); i++) {
+            m = 0;
+            m += lDTW.compute(Main.gestos.get(i).acX, s[0]).getDistance();
+            m += lDTW.compute(Main.gestos.get(i).acY, s[1]).getDistance();
+            m += lDTW.compute(Main.gestos.get(i).acZ, s[2]).getDistance();
+            m += lDTW.compute(Main.gestos.get(i).gX, s[3]).getDistance();
+            m += lDTW.compute(Main.gestos.get(i).gY, s[4]).getDistance();
+            m += lDTW.compute(Main.gestos.get(i).gZ, s[5]).getDistance();
+            m = m / 6;
+            if (m < 20) {
+                //clear();
+                System.out.println("Gesto:" + Main.gestos.get(i).name);
+            }
+            System.out.println(m);
+
+        }
+    }
+    
 
     public static void main(String[] args) throws IOException {
 
