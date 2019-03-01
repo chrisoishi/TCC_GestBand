@@ -68,7 +68,7 @@ public class Main extends Application {
 
         g.name = "sdgsdgsd";
         System.out.println(g.toString());
-
+        Simulation.init();
     }
 
     public static void saveGesture() throws IOException {
@@ -88,14 +88,15 @@ public class Main extends Application {
         File file = new File("myfile.txt");
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String st, s2[];
+        s2 = new String[1];
         String name = "";
         Gestures g;
-        float[][] temp = new float[6][30];;
+        float[][] temp = new float[6][200];;
         int count = 0;
         while ((st = reader.readLine()) != null) {
             
             if (count == 0) {
-                temp = new float[6][30];
+                temp = new float[6][200];
                 name = st;
                 //System.out.println(st);
             } else {
@@ -110,7 +111,7 @@ public class Main extends Application {
             }
             if (count == 6) {
                 count = 0;
-                g = new Gestures(name, temp[0], temp[1], temp[2], temp[3], temp[4], temp[5]);
+                g = new Gestures(name, s2.length,temp[0], temp[1], temp[2], temp[3], temp[4], temp[5]);
                 gestos.add(g);
                                             System.out.println(gestos);
                                             //System.out.println(gestos.get(0));

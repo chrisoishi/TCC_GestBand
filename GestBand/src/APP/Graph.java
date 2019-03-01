@@ -1,8 +1,6 @@
 package APP;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
@@ -28,9 +26,19 @@ public class Graph {
 
     private static final int MAX_DATA_POINTS = 200;
     private int xSeriesData = 0;
-    private ArrayList<XYChart.Series<Number, Number>> series = new ArrayList<>();
-    private ArrayList<ConcurrentLinkedQueue<Number>> queues = new ArrayList<>();
+    private XYChart.Series<Number, Number> series1 = new XYChart.Series<>();
+    private XYChart.Series<Number, Number> series2 = new XYChart.Series<>();
+    private XYChart.Series<Number, Number> series3 = new XYChart.Series<>();
+    private XYChart.Series<Number, Number> series4 = new XYChart.Series<>();
+    private XYChart.Series<Number, Number> series5 = new XYChart.Series<>();
+    private XYChart.Series<Number, Number> series6 = new XYChart.Series<>();
     private ExecutorService executor;
+    private ConcurrentLinkedQueue<Number> dataQ1 = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<Number> dataQ2 = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<Number> dataQ3 = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<Number> dataQ4 = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<Number> dataQ5 = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<Number> dataQ6 = new ConcurrentLinkedQueue<>();
     private FlowPane root = new FlowPane();
     private String s = "";
     private String[] s2;
@@ -48,6 +56,7 @@ public class Graph {
     boolean stop = false;
     boolean test = false;
 
+    private DTW lDTW = new DTW();
     private boolean test_dtw = false;
 
     TextField textField = new TextField();
@@ -153,16 +162,16 @@ public class Graph {
         lineChart1.setHorizontalGridLinesVisible(true);
 
         // Set Name for Series
-        series.get(0).setName("Acc X");
-        series.get(1).setName("Acc Y");
-        series.get(2).setName("Acc Z");
-        series.get(3).setName("Gyro X");
-        series.get(4).setName("Gyro Y");
-        series.get(5).setName("Gyro Z");
+        series1.setName("Acc X");
+        series2.setName("Acc Y");
+        series3.setName("Acc Z");
+        series4.setName("Gyro X");
+        series5.setName("Gyro Y");
+        series6.setName("Gyro Z");
 
         // Add Chart Series
-        lineChart.getData().addAll(series.get(0), series.get(1), series.get(2));
-        lineChart1.getData().addAll(series.get(3), series.get(4), series.get(5));
+        lineChart.getData().addAll(series1, series2, series3);
+        lineChart1.getData().addAll(series4, series5, series6);
 
         root.getChildren().addAll(lineChart, lineChart1, btnStop, btnSave, btnClear, btnTest, btnRead, textField, txtBegin, txtEnd);
         Scene scene = new Scene(root, 1000, 600);
@@ -175,10 +184,7 @@ public class Graph {
         stage.setTitle("GestBand");
         init(stage);
         stage.show();
-        for (int i = 0; i < 6; i++) {
-            series.add(new XYChart.Series<Number, Number>());
-            queues.add(new ConcurrentLinkedQueue<Number>());
-        }
+
         executor = Executors.newCachedThreadPool(new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
@@ -204,24 +210,34 @@ public class Graph {
 
     private void addDataToSeries() {
         for (int i = 0; i < 20; i++) { //-- add 20 numbers to the plot+
-            if (queues.get(0).isEmpty()) {
+            if (dataQ1.isEmpty()) {
                 break;
             }
-            for (int j = 0; j < 6; j++) {
-                series.get(j).getData().add(new XYChart.Data<>(xSeriesData, queues.get(j).remove()));
-            }
+            series1.getData().add(new XYChart.Data<>(xSeriesData, dataQ1.remove()));
+            series2.getData().add(new XYChart.Data<>(xSeriesData, dataQ2.remove()));
+            series3.getData().add(new XYChart.Data<>(xSeriesData, dataQ3.remove()));
+            series4.getData().add(new XYChart.Data<>(xSeriesData, dataQ4.remove()));
+            series5.getData().add(new XYChart.Data<>(xSeriesData, dataQ5.remove()));
+            series6.getData().add(new XYChart.Data<>(xSeriesData, dataQ6.remove()));
             if (xSeriesData < MAX_DATA_POINTS) {
                 xSeriesData++;
             }
         }
-        if (series.get(0).getData().size() > MAX_DATA_POINTS) {
-            for (int j = 0; j < 6; j++) {
-                series.get(j).getData().remove(0, series.get(j).getData().size() - MAX_DATA_POINTS);
-            }
-            for (int j = 0; j < series.get(0).getData().size(); j++) {
-                for (int i = 0; i < 6; i++) {
-                    series.get(i).getData().get(j).setXValue(j - 1);
-                }
+
+        if (series1.getData().size() > MAX_DATA_POINTS) {
+            series1.getData().remove(0, series1.getData().size() - MAX_DATA_POINTS);
+            series2.getData().remove(0, series2.getData().size() - MAX_DATA_POINTS);
+            series3.getData().remove(0, series3.getData().size() - MAX_DATA_POINTS);
+            series4.getData().remove(0, series4.getData().size() - MAX_DATA_POINTS);
+            series5.getData().remove(0, series5.getData().size() - MAX_DATA_POINTS);
+            series6.getData().remove(0, series6.getData().size() - MAX_DATA_POINTS);
+            for (int j = 0; j < series1.getData().size(); j++) {
+                series1.getData().get(j).setXValue(j - 1);
+                series2.getData().get(j).setXValue(j - 1);
+                series3.getData().get(j).setXValue(j - 1);
+                series4.getData().get(j).setXValue(j - 1);
+                series5.getData().get(j).setXValue(j - 1);
+                series6.getData().get(j).setXValue(j - 1);
             }
         }
         // update
@@ -235,14 +251,14 @@ public class Graph {
         s2 = s.split(":");
         if (!stop) {
             if (s2[0].equals("A")) {
-                queues.get(0).add(Integer.valueOf(s2[1]));
-                queues.get(1).add(Integer.valueOf(s2[2]));
-                queues.get(2).add(Integer.valueOf(s2[3]));
+                dataQ1.add(Integer.valueOf(s2[1]));
+                dataQ2.add(Integer.valueOf(s2[2]));
+                dataQ3.add(Integer.valueOf(s2[3]));
             } else {
-                queues.get(3).add(Integer.valueOf(s2[1]));
-                queues.get(4).add(Integer.valueOf(s2[2]));
-                queues.get(5).add(Integer.valueOf(s2[3]));
-                Main.testDTW(getData(0, 100));
+                dataQ4.add(Integer.valueOf(s2[1]));
+                dataQ5.add(Integer.valueOf(s2[2]));
+                dataQ6.add(Integer.valueOf(s2[3]));
+                testDTW();
             }
         }
     }
@@ -251,13 +267,18 @@ public class Graph {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private float[][] getData(int begin, int end) {
+    private void saveGesture() throws IOException {
+        int end = Integer.parseInt(txtEnd.getText());
+        int begin = Integer.parseInt(txtBegin.getText());
         int size = end - begin;
         float[][] s = new float[6][size];
         for (int i = begin; i < end; i++) {
-            for (int j = 0; j < 6; j++) {
-                s[j][i - begin] = series.get(j).getData().get(i).getYValue().floatValue();
-            }
+            s[0][i - begin] = series1.getData().get(i).getYValue().floatValue();
+            s[1][i - begin] = series2.getData().get(i).getYValue().floatValue();
+            s[2][i - begin] = series3.getData().get(i).getYValue().floatValue();
+            s[3][i - begin] = series4.getData().get(i).getYValue().floatValue();
+            s[4][i - begin] = series5.getData().get(i).getYValue().floatValue();
+            s[5][i - begin] = series6.getData().get(i).getYValue().floatValue();
         }
         Gestures g = new Gestures(textField.getText(), size, s[0], s[1], s[2], s[3], s[4], s[5]);
         Main.gestos.add(g);
@@ -266,12 +287,12 @@ public class Graph {
 
     public void setGesture(Gestures g) {
         for (int i = 0; i < g.acX.length; i++) {
-            queues.get(0).add(g.acX[i]);
-            queues.get(1).add(g.acY[i]);
-            queues.get(2).add(g.acZ[i]);
-            queues.get(3).add(g.gX[i]);
-            queues.get(4).add(g.gY[i]);
-            queues.get(5).add(g.gZ[i]);
+            dataQ1.add(g.acX[i]);
+            dataQ2.add(g.acY[i]);
+            dataQ3.add(g.acZ[i]);
+            dataQ4.add(g.gX[i]);
+            dataQ5.add(g.gY[i]);
+            dataQ6.add(g.gZ[i]);
 
         }
 
@@ -309,11 +330,15 @@ public class Graph {
                     m += lDTW.compute(Main.gestos.get(i).gZ, s[5]).getDistance();
                     m = m / 6;
                     if (m < 10) {
-                        
+                        try{
+                            Simulation.pressSpace();
+                        }catch(Exception e){
+                            
+                        }
                         System.out.println("Gesto:" + Main.gestos.get(i).name);
                         clear();
                     }
-                    System.out.println(Main.gestos.get(i).name+':'+m);
+                    System.out.println(m);
                 }
 
             }
@@ -321,9 +346,12 @@ public class Graph {
     }
 
     private void clear() {
-        for (int j = 0; j < 6; j++) {
-            series.get(j).getData().clear();
-        }
+        series1.getData().clear();
+        series2.getData().clear();
+        series3.getData().clear();
+        series4.getData().clear();
+        series5.getData().clear();
+        series6.getData().clear();
         xSeriesData = 0;
         addDataToSeries();
     }
