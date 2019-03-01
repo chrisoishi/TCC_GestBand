@@ -14,6 +14,7 @@ import java.io.Serializable;
 public class Gestures {
 
     public String name;
+    public int size;
     public float[] acX = new float[1];
     public float[] acY = new float[1];
     public float[] acZ = new float[1];
@@ -21,7 +22,8 @@ public class Gestures {
     public float[] gY = new float[1];
     public float[] gZ = new float[1];
     
-    public Gestures(String name,float[] acX, float[] acY, float[] acZ, float[] gX, float[] gY, float[] gZ ){
+    public Gestures(String name,int size,float[] acX, float[] acY, float[] acZ, float[] gX, float[] gY, float[] gZ ){
+        this.size = size;
         this.name= name;
         this.acX = acX;
         this.acY = acY;

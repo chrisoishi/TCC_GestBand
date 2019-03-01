@@ -148,12 +148,24 @@ void read_wifi(String req){
 
 void send_data(){
   if(gb_send_data){   
-    if(AcX != 0 || AcY != 0 || AcZ != 0){ 
-      sprintf(buf,"data;A:%d:%d:%d|",AcX/500,AcY/500,AcZ/500);
-      app_client.print(buf);
-       sprintf(buf,"data;G:%d:%d:%d|",GyX/500,GyY/500,GyZ/500);
-      app_client.print(buf);
-    }
+      app_client.print("data;A:");
+      app_client.print(AcX);
+      app_client.print(":");
+      app_client.print(AcY);
+      app_client.print(":");
+      app_client.print(AcZ);
+      app_client.print("|");
+      app_client.print("data;G:");
+      app_client.print(GyX);
+      app_client.print(":");
+      app_client.print(GyY);
+      app_client.print(":");
+      app_client.print(GyZ);
+      app_client.print("|");
+      //sprintf(buf,"data;A:%d:%d:%d|",AcX,AcY,AcZ);
+      //app_client.print(buf);
+      // sprintf(buf,"data;G:%d:%d:%d|",GyX,GyY,GyZ);
+      //app_client.print(buf);
    }
  }
 

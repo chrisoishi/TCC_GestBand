@@ -9,7 +9,7 @@ const int bluePin = D7;
 
 // #### OLED ####
 #define OLED_RESET 0  // GPIO0
-Adafruit_SSD1306 OLED(OLED_RESET);
+Adafruit_SSD1306 OLED(128,64,&Wire,OLED_RESET);
 
 // #### BATERIA ####
 const int bat_max_charge = 110;//Porcento
@@ -34,6 +34,7 @@ int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;
 //int16_t AcX2,AcY2,AcZ2,Tmp2,GyX2,GyY2,GyZ2;
 char buf[10];
 char buf2[256];
+int sensor_range = 500;
 
 // #### WIFI ####
 String ssid = ""; //SSID of your Wi-Fi router

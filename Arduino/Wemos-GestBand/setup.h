@@ -41,8 +41,8 @@ void setup_wifi(){
   while (WiFi.status() != WL_CONNECTED) {
     if(!counter(0) && !button_click()){
       if((counter_ticks+1)%400==0){
-        clear_pixel(32,24,128-32,8);
-        OLED.setCursor(32,24);
+        clear_pixel(32,40,128-32,8);
+        OLED.setCursor(32,40);
         OLED.print(ssid);
         OLED.display();
       }
