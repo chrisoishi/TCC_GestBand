@@ -7,16 +7,8 @@ package APP;
 
 import Controllers.*;
 import TCP.*;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,15 +25,14 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-    public static String s = "";
+    
     public static Graph Graph;
     public static Parent root;
     public static URL w_graph;
     public static MainController controller;
-    public static List<Gestures> gestos = new ArrayList<>();
-    public static DTW lDTW = new DTW();
+    
 
-    public static boolean CONNECTION = false;
+    
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -63,61 +54,10 @@ public class Main extends Application {
         });
         stage.show();
         Main.Graph = new Graph();
-
-        Gestures g = new Gestures();
-
-        g.name = "sdgsdgsd";
-        System.out.println(g.toString());
         Simulation.init();
     }
 
-    public static void saveGesture() throws IOException {
-        File file = new File("myfile.txt");
-        FileWriter fw = new FileWriter(file);
-        BufferedWriter writer = new BufferedWriter(fw);
-
-        for (int i = 0; i < gestos.size(); i++) {
-            writer.append(gestos.get(i).toString());
-        }
-        writer.close();
-
-    }
-
-    public static void getGestures() throws FileNotFoundException, IOException {
-        gestos.clear();
-        File file = new File("myfile.txt");
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        String st, s2[];
-        s2 = new String[1];
-        String name = "";
-        Gestures g;
-        float[][] temp = new float[6][200];;
-        int count = 0;
-        while ((st = reader.readLine()) != null) {
-            
-            if (count == 0) {
-                temp = new float[6][200];
-                name = st;
-            } else {
-                s2 = st.split(";");
-                for (int i = 0; i < s2.length; i++) {
-
-                    temp[count - 1][i] = Float.parseFloat(s2[i]);
-                }
-
-                
-            }
-            if (count == 6) {
-                count = 0;
-                g = new Gestures(name, s2.length,temp[0], temp[1], temp[2], temp[3], temp[4], temp[5]);
-                gestos.add(g);
-            } else {
-                count++;
-            }
-        }
-
-        reader.close();
-    }
+   
 
     public static void show_graph() throws IOException {
         FXMLLoader loader = new FXMLLoader(w_graph);
@@ -137,55 +77,7 @@ public class Main extends Application {
         });
         Graph.start(stage);
 
-    }
-
-    public static void connect_to_gestband(String ip) throws IOException {
-        ClientInSocket.Actions actionsReceive = new ClientInSocket.Actions() {
-            public void run(char c) {
-                if (c == '|') {
-                    handler_receive(s);
-                    s = "";
-                } else {
-                    s = s + Character.toString(c);
-                }
-            }
-        };
-        CONNECTION = ClientInSocket.Start(actionsReceive, ip);
-    }
-
-    private static void handler_receive(String s) {
-        String data[] = s.split(";");
-        switch (data[0]) {
-            case "wifi":
-                controller.set_wifi(data);
-                break;
-            case "data":
-                Graph.print(data[1]);
-                break;
-
-        }
-    }
-    public static void testDTW(float[][] data) {
-        float[][] s = data;
-        int m;
-        for (int i = 0; i < Main.gestos.size(); i++) {
-            m = 0;
-            m += lDTW.compute(Main.gestos.get(i).acX, s[0]).getDistance();
-            m += lDTW.compute(Main.gestos.get(i).acY, s[1]).getDistance();
-            m += lDTW.compute(Main.gestos.get(i).acZ, s[2]).getDistance();
-            m += lDTW.compute(Main.gestos.get(i).gX, s[3]).getDistance();
-            m += lDTW.compute(Main.gestos.get(i).gY, s[4]).getDistance();
-            m += lDTW.compute(Main.gestos.get(i).gZ, s[5]).getDistance();
-            m = m / 6;
-            if (m < 20) {
-                //clear();
-                System.out.println("Gesto:" + Main.gestos.get(i).name);
-            }
-            System.out.println(m);
-
-        }
-    }
-    
+    }    
 
     public static void main(String[] args) throws IOException {
 

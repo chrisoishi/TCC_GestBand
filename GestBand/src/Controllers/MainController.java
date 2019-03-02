@@ -18,7 +18,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
 import APP.Main;
-import static java.lang.System.in;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -61,13 +60,13 @@ public class MainController implements Initializable {
         //panel_gesture.getChildren().clear();
         System.out.println(panel_gesture.getChildren().size());
         panel_configure_wifi.setVisible(false);
-        Main.getGestures();
+        GestureController.getGestures();
                         
         Label l = new Label();
         Button b = new Button();
-        for (int i = 0; i < Main.gestos.size(); i++) {
+        for (int i = 0; i < GestureController.gestos.size(); i++) {
             int a = i;
-            g = Main.gestos.get(i);
+            g = GestureController.gestos.get(i);
             l = new Label();
             l.setText(g.name);
             b = new Button();
@@ -79,9 +78,9 @@ public class MainController implements Initializable {
                 public void handle(ActionEvent event) {
                     try {
                         Main.show_graph();
-                        Main.Graph.setGesture(Main.gestos.get(a));
+                        Main.Graph.setGesture(GestureController.gestos.get(a));
                                //System.out.println(a);
-                                System.out.println(Main.gestos.get(a));
+                                System.out.println(GestureController.gestos.get(a));
                     } catch (IOException ex) {
                         Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -100,9 +99,9 @@ public class MainController implements Initializable {
                 public void handle(ActionEvent event) {
                     Gestures g2 = g;
                     System.out.println(g);
-                    Main.gestos.remove(g);
+                    GestureController.gestos.remove(g);
                     try {
-                        Main.saveGesture(); 
+                        GestureController.saveGesture(); 
                     } catch (IOException ex) {
                         Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -120,13 +119,13 @@ public class MainController implements Initializable {
 
     @FXML
     void connection_start(ActionEvent event) throws IOException {
-        Main.connect_to_gestband(ip.getText());
+        ConnectionController.connect_to_gestband(ip.getText());
         setConnection();
     }
 
     @FXML
     private void configure_wifi(ActionEvent event) throws IOException {
-        if (Main.CONNECTION) {
+        if (ConnectionController.CONNECTION) {
             ClientInSocket.send("send_wifi;|");
             panel_connect.setVisible(false);
             panel_configure_wifi.setVisible(true);
@@ -142,7 +141,7 @@ public class MainController implements Initializable {
     @FXML
     private void restart(ActionEvent event) throws IOException {
         ClientInSocket.send("restart;|");
-        Main.CONNECTION = false;
+        ConnectionController.CONNECTION = false;
         ClientInSocket.stop();
         setConnection();
     }
@@ -154,7 +153,7 @@ public class MainController implements Initializable {
     }
 
     private void setConnection() {
-        if (Main.CONNECTION) {
+        if (ConnectionController.CONNECTION) {
             label_connection.setText("Conectado");
         } else {
             label_connection.setText("Desconectado");

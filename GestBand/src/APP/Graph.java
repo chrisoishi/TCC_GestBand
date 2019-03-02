@@ -1,5 +1,6 @@
 package APP;
 
+import Controllers.GestureController;
 import java.io.IOException;
 
 import javafx.animation.AnimationTimer;
@@ -21,10 +22,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
-
-import java.awt.AWTException;
-import java.awt.Robot;
-import java.awt.event.KeyEvent;
 
 public class Graph {
 
@@ -59,6 +56,7 @@ public class Graph {
     Button btnRead = new Button();
     boolean stop = false;
     boolean test = false;
+    boolean clear = false;
 
     private DTW lDTW = new DTW();
     private boolean test_dtw = false;
@@ -94,7 +92,9 @@ public class Graph {
             public void handle(ActionEvent event) {
 
                 if (stop) {
+
                     clear();
+
                     stop = false;
                 } else {
                     stop = true;
@@ -121,7 +121,9 @@ public class Graph {
             @Override
             public void handle(ActionEvent event) {
                 if (stop) {
+
                     clear();
+
                 }
             }
         });
@@ -207,12 +209,26 @@ public class Graph {
         new AnimationTimer() {
             @Override
             public void handle(long now) {
-                addDataToSeries();
+                try {
+                    addDataToSeries();
+                } catch (Exception ex) {
+                    Logger.getLogger(Graph.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }.start();
     }
 
-    private void addDataToSeries() {
+    private void addDataToSeries() throws Exception {
+        if (clear) {
+            series1.getData().clear();
+            series2.getData().clear();
+            series3.getData().clear();
+            series4.getData().clear();
+            series5.getData().clear();
+            series6.getData().clear();
+            xSeriesData = 0;
+            clear = false;
+        }
         for (int i = 0; i < 20; i++) { //-- add 20 numbers to the plot+
             if (dataQ1.isEmpty()) {
                 break;
@@ -262,10 +278,10 @@ public class Graph {
                 dataQ4.add(Integer.valueOf(s2[1]));
                 dataQ5.add(Integer.valueOf(s2[2]));
                 dataQ6.add(Integer.valueOf(s2[3]));
-                 
-                 testDTW();
+                //Simulation.mouse(Integer.valueOf(s2[3]), Integer.valueOf(s2[2]));
+                testDTW();
             }
-           
+
         }
     }
 
@@ -287,8 +303,8 @@ public class Graph {
             s[5][i - begin] = series6.getData().get(i).getYValue().floatValue();
         }
         Gestures g = new Gestures(textField.getText(), size, s[0], s[1], s[2], s[3], s[4], s[5]);
-        Main.gestos.add(g);
-        Main.saveGesture();
+        GestureController.gestos.add(g);
+        GestureController.saveGesture();
     }
 
     public void setGesture(Gestures g) {
@@ -302,23 +318,28 @@ public class Graph {
 
         }
 
-        addDataToSeries();
+        try {
+            addDataToSeries();
+        } catch (Exception ex) {
+            Logger.getLogger(Graph.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private float[][] getData(int size) {
         float[][] s = new float[6][size];
         int size_serie = series1.getData().size() - size;
-        if(size_serie < 0 )size_serie=0;
+        if (size_serie < 0) {
+            size_serie = 0;
+        }
         for (int i = 0; i < size - 2; i++) {
-            if((size_serie + i)<200){
-            s[0][i] = series1.getData().get(size_serie + i).getYValue().floatValue();
-            s[1][i] = series2.getData().get(size_serie + i).getYValue().floatValue();
-            s[2][i] = series3.getData().get(size_serie + i).getYValue().floatValue();
-            s[3][i] = series4.getData().get(size_serie + i).getYValue().floatValue();
-            s[4][i] = series5.getData().get(size_serie + i).getYValue().floatValue();
-            s[5][i] = series6.getData().get(size_serie + i).getYValue().floatValue();
-            }
-            else{
+            if ((size_serie + i) < MAX_DATA_POINTS) {
+                s[0][i] = series1.getData().get(size_serie + i).getYValue().floatValue();
+                s[1][i] = series2.getData().get(size_serie + i).getYValue().floatValue();
+                s[2][i] = series3.getData().get(size_serie + i).getYValue().floatValue();
+                s[3][i] = series4.getData().get(size_serie + i).getYValue().floatValue();
+                s[4][i] = series5.getData().get(size_serie + i).getYValue().floatValue();
+                s[5][i] = series6.getData().get(size_serie + i).getYValue().floatValue();
+            } else {
                 //System.out.println("erros");
             }
         }
@@ -327,25 +348,27 @@ public class Graph {
 
     private void testDTW() {
         if (test) {
-            
+
             int size;
             int m;
             float[][] s;
-            for (int i = 0; i < Main.gestos.size(); i++) {
-                if (series1.getData().size() + 1 > Main.gestos.get(i).size) {
-                    s = getData(Main.gestos.get(i).size);
+            for (int i = 0; i < GestureController.gestos.size(); i++) {
+                if (series1.getData().size() + 1 > GestureController.gestos.get(i).size) {
+                    s = getData(GestureController.gestos.get(i).size);
                     m = 0;
-                    m += lDTW.compute(Main.gestos.get(i).acX, s[0]).getDistance();
-                    m += lDTW.compute(Main.gestos.get(i).acY, s[1]).getDistance();
-                    m += lDTW.compute(Main.gestos.get(i).acZ, s[2]).getDistance();
-                    m += lDTW.compute(Main.gestos.get(i).gX, s[3]).getDistance();
-                    m += lDTW.compute(Main.gestos.get(i).gY, s[4]).getDistance();
-                    m += lDTW.compute(Main.gestos.get(i).gZ, s[5]).getDistance();
+                    m += lDTW.compute(GestureController.gestos.get(i).acX, s[0]).getDistance();
+                    m += lDTW.compute(GestureController.gestos.get(i).acY, s[1]).getDistance();
+                    m += lDTW.compute(GestureController.gestos.get(i).acZ, s[2]).getDistance();
+                    m += lDTW.compute(GestureController.gestos.get(i).gX, s[3]).getDistance();
+                    m += lDTW.compute(GestureController.gestos.get(i).gY, s[4]).getDistance();
+                    m += lDTW.compute(GestureController.gestos.get(i).gZ, s[5]).getDistance();
                     m = m / 6;
                     if (m < 10) {
-                        System.out.println("Gesto:" + Main.gestos.get(i).name);
+                        System.out.println("Gesto:" + GestureController.gestos.get(i).name);
+
                         clear();
-                        pressSpace();
+
+                        Simulation.pressSpace();
                     }
                     //System.out.println(m);
                 }
@@ -354,29 +377,9 @@ public class Graph {
         }
     }
 
-    public static void pressSpace() {
-
-        Robot robot;
-        try {
-            robot = new Robot();
-            robot.keyPress(KeyEvent.VK_SPACE);
-            robot.delay(100);
-            robot.keyRelease(KeyEvent.VK_SPACE);
-        } catch (AWTException ex) {
-            Logger.getLogger(Graph.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-
     private void clear() {
-        series1.getData().clear();
-        series2.getData().clear();
-        series3.getData().clear();
-        series4.getData().clear();
-        series5.getData().clear();
-        series6.getData().clear();
-        xSeriesData = 0;
-        addDataToSeries();
+        clear = true;
+
     }
 
 }
