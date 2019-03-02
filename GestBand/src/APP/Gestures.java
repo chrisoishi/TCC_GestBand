@@ -6,6 +6,7 @@
 package APP;
 
 import java.io.Serializable;
+import javafx.scene.input.KeyCode;
 
 /**
  *
@@ -15,6 +16,7 @@ public class Gestures {
 
     public String name;
     public int size;
+    public String default_action;
     public float[] acX = new float[1];
     public float[] acY = new float[1];
     public float[] acZ = new float[1];
@@ -49,27 +51,27 @@ public class Gestures {
         String s = "";
         s += name;
         s+="\r\n";
-        for (int i = 0; i < acX.length; i++) {
+        for (int i = 0; i < size; i++) {
             s += Float.toString(acX[i]) + ";";
         }
         s+="\r\n";
-        for (int i = 0; i < acY.length; i++) {
+        for (int i = 0; i < size; i++) {
             s += Float.toString(acY[i]) + ";";
         }
         s+="\r\n";
-        for (int i = 0; i < acZ.length; i++) {
+        for (int i = 0; i < size; i++) {
             s += Float.toString(acZ[i]) + ";";
         }
         s+="\r\n";
-        for (int i = 0; i < gX.length; i++) {
+        for (int i = 0; i < size; i++) {
             s += Float.toString(gX[i]) + ";";
         }
         s+="\r\n";
-        for (int i = 0; i < gY.length; i++) {
+        for (int i = 0; i < size; i++) {
             s += Float.toString(gY[i]) + ";";
         }
         s+="\r\n";
-        for (int i = 0; i < gZ.length; i++) {
+        for (int i = 0; i < size; i++) {
             s += Float.toString(gZ[i]) + ";";
         }
         s+="\r\n";

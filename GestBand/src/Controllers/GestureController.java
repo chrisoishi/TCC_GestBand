@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 /**
  *
  * @author Chris
@@ -25,7 +27,7 @@ public class GestureController {
     public static List<Gestures> gestos = new ArrayList<>();
 
     public static void saveGesture() throws IOException {
-        File file = new File("myfile.txt");
+        File file = new File("gestures.txt");
         FileWriter fw = new FileWriter(file);
         BufferedWriter writer = new BufferedWriter(fw);
 
@@ -37,14 +39,15 @@ public class GestureController {
     }
 
     public static void getGestures() throws FileNotFoundException, IOException {
+        System.out.println("read_gesto");
         gestos.clear();
-        File file = new File("myfile.txt");
+        File file = new File("gestures.txt");
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String st, s2[];
         s2 = new String[1];
         String name = "";
         Gestures g;
-        float[][] temp = new float[6][200];;
+        float[][] temp = new float[6][200];
         int count = 0;
         while ((st = reader.readLine()) != null) {
 

@@ -363,12 +363,13 @@ public class Graph {
                     m += lDTW.compute(GestureController.gestos.get(i).gY, s[4]).getDistance();
                     m += lDTW.compute(GestureController.gestos.get(i).gZ, s[5]).getDistance();
                     m = m / 6;
-                    if (m < 10) {
+                    if (m < 20) {
                         System.out.println("Gesto:" + GestureController.gestos.get(i).name);
+                        
 
                         clear();
 
-                        Simulation.pressSpace();
+                        Simulation.pressKey(GestureController.gestos.get(i).default_action);
                     }
                     //System.out.println(m);
                 }

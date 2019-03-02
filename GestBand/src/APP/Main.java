@@ -25,14 +25,10 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-    
     public static Graph Graph;
     public static Parent root;
     public static URL w_graph;
     public static MainController controller;
-    
-
-    
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -57,8 +53,6 @@ public class Main extends Application {
         Simulation.init();
     }
 
-   
-
     public static void show_graph() throws IOException {
         FXMLLoader loader = new FXMLLoader(w_graph);
         Main.Graph = new Graph();
@@ -68,16 +62,18 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.setOnCloseRequest(WindowEvent
                 -> {
-            try {
-                ClientInSocket.send("stop;|");
-            } catch (IOException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            if (ConnectionController.CONNECTION) {
+                try {
+                    ClientInSocket.send("stop;|");
+                } catch (IOException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
 
         });
         Graph.start(stage);
 
-    }    
+    }
 
     public static void main(String[] args) throws IOException {
 

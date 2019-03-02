@@ -15,7 +15,15 @@ public class DTWController {
 
     public static DTW lDTW = new DTW();
     public static float[][] data;
+    public static int MAX_SIZE = 200;
 
+    
+    public static void init(){
+        data = new float[6][MAX_SIZE];
+    }
+        
+    
+    
     public static void test(float[][] data) {
         int m;
         for (int i = 0; i < GestureController.gestos.size(); i++) {

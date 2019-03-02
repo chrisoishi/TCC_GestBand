@@ -23,15 +23,22 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+
+import java.awt.event.KeyEvent;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 /**
  *
  * @author rodri
  */
 public class MainController implements Initializable {
-    Gestures g;
+
+    int index;
+    TextField tf;
     @FXML
     private GridPane panel_connect, panel_configure_wifi, panel_gesture;
     @FXML
@@ -41,10 +48,10 @@ public class MainController implements Initializable {
     private Label label_connection;
 
     private String s = "";
-    
+
     private List<Button> buttonShow = new ArrayList<>();
     private List<Button> buttonDel = new ArrayList<>();
-    public  List<Gestures> gestos = new ArrayList<>();
+    public List<Gestures> gestos = new ArrayList<>();
 
     @FXML
     private void show_panel_connection(ActionEvent event) {
@@ -57,58 +64,73 @@ public class MainController implements Initializable {
     private void show_gesture(ActionEvent event) throws IOException {
         panel_gesture.setVisible(true);
         panel_connect.setVisible(false);
-        //panel_gesture.getChildren().clear();
+        Node n0 = panel_gesture.getChildren().get(0);
+        Node n1 = panel_gesture.getChildren().get(1);
+        panel_gesture.getChildren().clear();
+        panel_gesture.add(n0, 0, 0);
+        panel_gesture.add(n1, 1, 0);
         System.out.println(panel_gesture.getChildren().size());
         panel_configure_wifi.setVisible(false);
         GestureController.getGestures();
-                        
+
         Label l = new Label();
         Button b = new Button();
         for (int i = 0; i < GestureController.gestos.size(); i++) {
             int a = i;
-            g = GestureController.gestos.get(i);
+            final Gestures g = GestureController.gestos.get(i);
             l = new Label();
             l.setText(g.name);
             b = new Button();
-            buttonShow.add(b);
-            buttonShow.get(i).setPrefWidth(panel_gesture.getWidth() / 2);
-            buttonShow.get(i).setText("Mostrar");
-            buttonShow.get(i).setOnAction(new EventHandler<ActionEvent>() {
+            final TextField tf = new TextField();
+            b.setPrefWidth(panel_gesture.getWidth() / 3);
+            b.setText("Mostrar");
+            b.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
                     try {
                         Main.show_graph();
                         Main.Graph.setGesture(GestureController.gestos.get(a));
-                               //System.out.println(a);
-                                System.out.println(GestureController.gestos.get(a));
+                        //System.out.println(a);
+                        System.out.println(GestureController.gestos.get(a));
                     } catch (IOException ex) {
                         Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             });
-                        
             panel_gesture.add(l, 0, i + 1);
             panel_gesture.add(b, 1, i + 1);
-            
+
             b = new Button();
-            b.setPrefWidth(panel_gesture.getWidth() / 2);
-            
+            b.setPrefWidth(panel_gesture.getWidth() / 3);
+
             b.setText("Delete");
-                        b.setOnAction(new EventHandler<ActionEvent>() {
+            b.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
                     Gestures g2 = g;
-                    System.out.println(g);
                     GestureController.gestos.remove(g);
                     try {
-                        GestureController.saveGesture(); 
+                        GestureController.saveGesture();
+                        show_gesture(event);
                     } catch (IOException ex) {
                         Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    
+
                 }
             });
             panel_gesture.add(b, 2, i + 1);
+            tf.setOnKeyPressed(key_event ->{
+                tf.setText(key_event.getCode().name());
+                g.default_action = key_event.getCode().name();
+                
+            });
+            tf.setOnKeyReleased(key_event ->{
+                tf.setText(key_event.getCode().name());
+                
+            });
+            
+
+            panel_gesture.add(tf, 3, i + 1);
         }
         //panel_gesture.set
     }
