@@ -51,6 +51,7 @@ public class Main extends Application {
         stage.show();
         Main.Graph = new Graph();
         Simulation.init();
+        DTWController.init();
     }
 
     public static void show_graph() throws IOException {

@@ -174,9 +174,10 @@ public class MainController implements Initializable {
         ClientInSocket.send(s);
     }
 
-    private void setConnection() {
+    private void setConnection() throws IOException {
         if (ConnectionController.CONNECTION) {
             label_connection.setText("Conectado");
+             ClientInSocket.send("send;|");
         } else {
             label_connection.setText("Desconectado");
         }

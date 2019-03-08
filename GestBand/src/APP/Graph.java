@@ -1,5 +1,6 @@
 package APP;
 
+import Controllers.DTWController;
 import Controllers.GestureController;
 import java.io.IOException;
 
@@ -267,17 +268,16 @@ public class Graph {
         xAxis1.setUpperBound(xSeriesData - 1);
     }
 
-    public void print(String s) {
-        if (!stop) {
-            s2 = s.split(":");
-            if (s2[0].equals("A")) {
-                dataQ1.add(Integer.valueOf(s2[1]));
-                dataQ2.add(Integer.valueOf(s2[2]));
-                dataQ3.add(Integer.valueOf(s2[3]));
+    public void print(int type,String[] s) {
+        if (DTWController.GB_MOVE & !stop) {
+            if (type==0) {
+                dataQ1.add(Integer.valueOf(s[1]));
+                dataQ2.add(Integer.valueOf(s[2]));
+                dataQ3.add(Integer.valueOf(s[3]));
             } else {
-                dataQ4.add(Integer.valueOf(s2[1]));
-                dataQ5.add(Integer.valueOf(s2[2]));
-                dataQ6.add(Integer.valueOf(s2[3]));
+                dataQ4.add(Integer.valueOf(s[1]));
+                dataQ5.add(Integer.valueOf(s[2]));
+                dataQ6.add(Integer.valueOf(s[3]));
                 //Simulation.mouse(Integer.valueOf(s2[3]), Integer.valueOf(s2[2]));
                 testDTW();
             }

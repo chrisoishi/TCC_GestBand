@@ -40,7 +40,8 @@ public class ConnectionController {
                 controller.set_wifi(data);
                 break;
             case "data":
-                Graph.print(data[1]);
+                DTWController.receive(data[1]);
+                
                 break;
 
         }

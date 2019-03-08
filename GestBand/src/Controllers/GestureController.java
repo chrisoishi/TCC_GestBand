@@ -25,6 +25,7 @@ import java.util.List;
 public class GestureController {
 
     public static List<Gestures> gestos = new ArrayList<>();
+    public static List<Gestures> gestos_current = new ArrayList<>();
 
     public static void saveGesture() throws IOException {
         File file = new File("gestures.txt");
