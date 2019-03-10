@@ -50,6 +50,9 @@ public class Gestures {
     public String toString() {
         String s = "";
         s += name;
+        if(!default_action.equals("")){
+            s+=";"+default_action;
+        }
         s+="\r\n";
         for (int i = 0; i < size; i++) {
             s += Float.toString(acX[i]) + ";";

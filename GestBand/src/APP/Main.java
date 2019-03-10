@@ -32,9 +32,11 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        Settings.read();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/FXML/Main.fxml"));
+
         root = loader.load();
-        controller = loader.getController();
+
         w_graph = getClass().getResource("/FXML/blank.fxml");
 
         Scene scene = new Scene(root);
@@ -43,36 +45,41 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.setOnCloseRequest(WindowEvent -> {
             try {
+                Settings.save();
                 ClientInSocket.stop();
             } catch (IOException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
         stage.show();
+        controller = loader.getController();
         Main.Graph = new Graph();
         Simulation.init();
         DTWController.init();
+        GestureController.getGestures();
+
     }
 
-    public static void show_graph() throws IOException {
+    public static void show_graph() {
         FXMLLoader loader = new FXMLLoader(w_graph);
         Main.Graph = new Graph();
 
-        Scene scene = new Scene(loader.load());
-        Stage stage = new Stage();
-        stage.setScene(scene);
-        stage.setOnCloseRequest(WindowEvent
-                -> {
-            if (ConnectionController.CONNECTION) {
-                try {
-                    ClientInSocket.send("stop;|");
-                } catch (IOException ex) {
-                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        Scene scene;
+        try {
+            scene = new Scene(loader.load());
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage.setOnCloseRequest(WindowEvent
+                    -> {
+                if (ConnectionController.CONNECTION) {
+                    //ClientInSocket.send("stop;|");
                 }
-            }
 
-        });
-        Graph.start(stage);
+            });
+            Graph.start(stage);
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 

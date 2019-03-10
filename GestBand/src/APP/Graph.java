@@ -2,7 +2,9 @@ package APP;
 
 import Controllers.DTWController;
 import Controllers.GestureController;
+import Controllers.MainController;
 import java.io.IOException;
+import static java.lang.Thread.sleep;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
@@ -17,12 +19,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.text.TextAlignment;
 
 public class Graph {
 
@@ -41,7 +48,7 @@ public class Graph {
     private ConcurrentLinkedQueue<Number> dataQ4 = new ConcurrentLinkedQueue<>();
     private ConcurrentLinkedQueue<Number> dataQ5 = new ConcurrentLinkedQueue<>();
     private ConcurrentLinkedQueue<Number> dataQ6 = new ConcurrentLinkedQueue<>();
-    private FlowPane root = new FlowPane();
+    private GridPane root = new GridPane();
     private String s = "";
     private String[] s2;
     private float[] s_saved = new float[100];
@@ -50,7 +57,8 @@ public class Graph {
     private NumberAxis xAxis;
     private NumberAxis xAxis1;
 
-    Button btnStop = new Button();
+    Button btnStart = new Button("Iniciar");
+    Label instruction = new Label();
     Button btnSave = new Button();
     Button btnClear = new Button();
     Button btnTest = new Button();
@@ -62,7 +70,7 @@ public class Graph {
     private DTW lDTW = new DTW();
     private boolean test_dtw = false;
 
-    TextField textField = new TextField();
+    TextField txtName = new TextField();
     TextField textField2 = new TextField();
 
     TextField txtBegin = new TextField();
@@ -86,30 +94,63 @@ public class Graph {
         xAxis1.setTickMarkVisible(true);
         xAxis1.setMinorTickVisible(true);
 
-        btnStop.setText("Start/Stop");
-        btnStop.setOnAction(new EventHandler<ActionEvent>() {
+        btnStart.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
 
-                if (stop) {
+                clear();
+                stop = true;
+                instruction.setText("Posicione seu braço na posição inicial...");
+                Task t = new Task() {
+                    @Override
+                    protected Object call() throws Exception, InterruptedException {
+                        while (!DTWController.GB_INITIAL) {
+                            sleep(100);
+                        }
+                        return true;
+                    }
 
-                    clear();
+                    @Override
+                    protected void succeeded() {
+                        stop = false;
+                        instruction.setText("Agora faça seu gesto...");
+                        Task t = new Task() {
+                            @Override
+                            protected Object call() throws Exception, InterruptedException {
+                                while (!DTWController.GB_MOVE) {
+                                    sleep(100);
+                                }
+                                while (DTWController.GB_MOVE) {
+                                    sleep(100);
+                                }
+                                return true;
+                            }
 
-                    stop = false;
-                } else {
-                    stop = true;
-                }
+                            @Override
+                            protected void succeeded() {
+                                stop = true;
+                                instruction.setText("Muito bem seu gesto foi gravado");
+                                txtBegin.setText("0");
+                                txtEnd.setText(Integer.toString(series1.getData().size() - 1));
+                            }
+                        };
+                        new Thread(t).start();
+                    }
+                };
+                new Thread(t).start();
             }
         });
 
-        btnSave.setText("Save");
+        btnSave.setText("Salvar gesto");
         btnSave.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
                 try {
+
                     saveGesture();
+
                 } catch (IOException ex) {
                     Logger.getLogger(Graph.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -161,27 +202,64 @@ public class Graph {
         };
 
         lineChart.setAnimated(false);
-        lineChart.setTitle("Acc Time Series");
+        lineChart.setTitle("Acelerometro");
         lineChart.setHorizontalGridLinesVisible(true);
 
         lineChart1.setAnimated(false);
-        lineChart1.setTitle("Gyro Time Series");
+        lineChart1.setTitle("Giroscópio");
         lineChart1.setHorizontalGridLinesVisible(true);
 
         // Set Name for Series
-        series1.setName("Acc X");
-        series2.setName("Acc Y");
-        series3.setName("Acc Z");
-        series4.setName("Gyro X");
-        series5.setName("Gyro Y");
-        series6.setName("Gyro Z");
+        series1.setName("A-X");
+        series2.setName("A-Y");
+        series3.setName("A-Z");
+        series4.setName("G-X");
+        series5.setName("G-Y");
+        series6.setName("G-Z");
 
         // Add Chart Series
         lineChart.getData().addAll(series1, series2, series3);
         lineChart1.getData().addAll(series4, series5, series6);
+        root.getStylesheets().add("lib/style.css");
 
-        root.getChildren().addAll(lineChart, lineChart1, btnStop, btnSave, btnClear, btnTest, btnRead, textField, txtBegin, txtEnd);
-        Scene scene = new Scene(root, 1000, 600);
+        AnchorPane.setTopAnchor(root, (double) 0);
+        AnchorPane.setLeftAnchor(root, (double) 0);
+        AnchorPane.setRightAnchor(root, (double) 0);
+
+        root.add(lineChart, 0, 0);
+        root.add(lineChart1, 1, 0);
+        GridPane new_gesture_pane = new GridPane();
+        new_gesture_pane.getStyleClass().add("grid-pane-content");
+        new_gesture_pane.setStyle("-fx-padding:10");
+
+        root.add(new_gesture_pane, 0, 2, 2, 1);
+        instruction.setAlignment(Pos.CENTER);
+        instruction.setStyle("-fx-font-size: 20pt;");
+        instruction.setText("...");
+        instruction.setPrefWidth(1000);
+        root.add(instruction, 0, 3, 2, 1);
+
+        new_gesture_pane.add(MainController.lHeader("Gesto"), 0, 0, 2, 1);
+
+        new_gesture_pane.add(new Label("Nome do Gesto"), 0, 1);
+        new_gesture_pane.add(txtName, 1, 1);
+
+        new_gesture_pane.add(MainController.lHeader("Gravar"), 3, 0, 2, 1);
+        btnStart.setPrefWidth(250);
+        new_gesture_pane.add(btnStart, 3, 1);
+
+        new_gesture_pane.add(MainController.lHeader("Intervalo de dados"), 5, 0, 2, 1);
+
+        new_gesture_pane.add(new Label("Inicio"), 5, 1);
+        new_gesture_pane.add(txtBegin, 6, 1);
+
+        new_gesture_pane.add(new Label("Fim"), 5, 2);
+        new_gesture_pane.add(txtEnd, 6, 2);
+        btnSave.setPrefWidth(300);
+        new_gesture_pane.add(btnSave, 5, 3, 2, 1);
+
+        //root.getChildren().addAll(btnStop, btnSave, btnClear, btnTest, btnRead, textField, txtBegin, txtEnd);
+        Scene scene = new Scene(root, 1000, 700);
         primaryStage.setScene(scene);
 
     }
@@ -268,9 +346,9 @@ public class Graph {
         xAxis1.setUpperBound(xSeriesData - 1);
     }
 
-    public void print(int type,String[] s) {
+    public void print(int type, String[] s) {
         if (DTWController.GB_MOVE & !stop) {
-            if (type==0) {
+            if (type == 0) {
                 dataQ1.add(Integer.valueOf(s[1]));
                 dataQ2.add(Integer.valueOf(s[2]));
                 dataQ3.add(Integer.valueOf(s[3]));
@@ -278,8 +356,6 @@ public class Graph {
                 dataQ4.add(Integer.valueOf(s[1]));
                 dataQ5.add(Integer.valueOf(s[2]));
                 dataQ6.add(Integer.valueOf(s[3]));
-                //Simulation.mouse(Integer.valueOf(s2[3]), Integer.valueOf(s2[2]));
-                testDTW();
             }
 
         }
@@ -290,21 +366,29 @@ public class Graph {
     }
 
     private void saveGesture() throws IOException {
-        int end = Integer.parseInt(txtEnd.getText());
-        int begin = Integer.parseInt(txtBegin.getText());
-        int size = end - begin;
-        float[][] s = new float[6][size];
-        for (int i = begin; i < end; i++) {
-            s[0][i - begin] = series1.getData().get(i).getYValue().floatValue();
-            s[1][i - begin] = series2.getData().get(i).getYValue().floatValue();
-            s[2][i - begin] = series3.getData().get(i).getYValue().floatValue();
-            s[3][i - begin] = series4.getData().get(i).getYValue().floatValue();
-            s[4][i - begin] = series5.getData().get(i).getYValue().floatValue();
-            s[5][i - begin] = series6.getData().get(i).getYValue().floatValue();
+        if (!txtName.getText().equals("")) {
+            int end = Integer.parseInt(txtEnd.getText());
+            int begin = Integer.parseInt(txtBegin.getText());
+            int size = end - begin;
+            float[][] s = new float[6][size];
+            for (int i = begin; i < end; i++) {
+                s[0][i - begin] = series1.getData().get(i).getYValue().floatValue();
+                s[1][i - begin] = series2.getData().get(i).getYValue().floatValue();
+                s[2][i - begin] = series3.getData().get(i).getYValue().floatValue();
+                s[3][i - begin] = series4.getData().get(i).getYValue().floatValue();
+                s[4][i - begin] = series5.getData().get(i).getYValue().floatValue();
+                s[5][i - begin] = series6.getData().get(i).getYValue().floatValue();
+            }
+            Gestures g = new Gestures(txtName.getText(), size, s[0], s[1], s[2], s[3], s[4], s[5]);
+            GestureController.gestos.add(g);
+            GestureController.saveGesture();
+            instruction.setText("Seu gesto foi salvo!!!");
+            clear();
+            txtName.setText("");
         }
-        Gestures g = new Gestures(textField.getText(), size, s[0], s[1], s[2], s[3], s[4], s[5]);
-        GestureController.gestos.add(g);
-        GestureController.saveGesture();
+        else{
+            instruction.setText("Digite um nome para seu novo gesto!");
+        }
     }
 
     public void setGesture(Gestures g) {
@@ -365,7 +449,6 @@ public class Graph {
                     m = m / 6;
                     if (m < 20) {
                         System.out.println("Gesto:" + GestureController.gestos.get(i).name);
-                        
 
                         clear();
 

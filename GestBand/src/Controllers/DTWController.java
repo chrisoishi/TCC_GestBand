@@ -25,29 +25,15 @@ public class DTWController {
     private static String buff[];
     private static int i_current, i_period;
 
+    public static boolean ACTIVE = false;
     public static boolean GB_MOVE = false;
+    public static boolean GB_INITIAL = false;
     public static int buff_moving = 0;
+    public static int buff_position = 0;
 
     public static void init() {
         data = new float[6][MAX_SIZE];
         i_current = 0;
-    }
-
-    public static void test(float[][] data) {
-        int m;
-        for (int i = 0; i < GestureController.gestos.size(); i++) {
-            m = 0;
-            m += lDTW.compute(GestureController.gestos.get(i).acX, data[0]).getDistance();
-            m += lDTW.compute(GestureController.gestos.get(i).acY, data[1]).getDistance();
-            m += lDTW.compute(GestureController.gestos.get(i).acZ, data[2]).getDistance();
-            m += lDTW.compute(GestureController.gestos.get(i).gX, data[3]).getDistance();
-            m += lDTW.compute(GestureController.gestos.get(i).gY, data[4]).getDistance();
-            m += lDTW.compute(GestureController.gestos.get(i).gZ, data[5]).getDistance();
-            m = m / 6;
-            if (m < 20) {
-                System.out.println("Gesto:" + GestureController.gestos.get(i).name);
-            }
-        }
     }
 
     public static void receive(String s) {
@@ -58,6 +44,7 @@ public class DTWController {
             add_data(buff[2], 1);
             add_data(buff[3], 2);
             Graph.print(0, buff);
+            position(buff);
         } else {
             add_data(buff[1], 3);
             add_data(buff[2], 4);
@@ -65,6 +52,27 @@ public class DTWController {
             Graph.print(1, buff);
             moving(buff);
             execute();
+        }
+
+    }
+
+    public static void position(String[] d) {
+        float[] f = new float[3];
+        f[0] = Float.parseFloat(d[1]);
+        f[1] = Float.parseFloat(d[2]);
+        f[2] = Float.parseFloat(d[3]);
+        if (f[2] > 27) {
+            if (!GB_INITIAL) {
+                buff_position += 1;
+                if (buff_position == 70) {
+                    GB_INITIAL = true;
+                    System.out.println("inicio");
+                }
+            }
+        } else if (GB_INITIAL) {
+            System.out.println("inicio cancelado");
+            GB_INITIAL = false;
+            buff_position = 0;
         }
 
     }
@@ -133,11 +141,13 @@ public class DTWController {
     }
 
     public static void execute() {
-        i_period++;
-        //print(50);
-        if (i_period == PERIOD) {
-            validate();
-            i_period = 0;
+        if (ACTIVE) {
+            i_period++;
+            //print(50);
+            if (i_period == PERIOD) {
+                validate();
+                i_period = 0;
+            }
         }
     }
 
@@ -171,7 +181,7 @@ public class DTWController {
             g = GestureController.gestos.get(certo);
             System.out.println("Gesto:" + g.name);
             clear();
-            Simulation.pressKey(g.default_action);
+            if(!g.default_action.equals(""))Simulation.pressKey(g.default_action);
         }
     }
 

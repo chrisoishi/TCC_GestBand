@@ -5,10 +5,13 @@
  */
 package Controllers;
 
+import APP.Main;
 import static APP.Main.Graph;
 import static APP.Main.controller;
 import TCP.ClientInSocket;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,7 +22,7 @@ public class ConnectionController {
     private static String s = "";
     public static boolean CONNECTION = false;
 
-    public static void connect_to_gestband(String ip) throws IOException {
+    public static boolean connect_to_gestband(String ip) throws IOException {
         ClientInSocket.Actions actionsReceive = new ClientInSocket.Actions() {
             public void run(char c) {
                 if (c == '|') {
@@ -31,6 +34,23 @@ public class ConnectionController {
             }
         };
         CONNECTION = ClientInSocket.Start(actionsReceive, ip);
+        return CONNECTION;
+    }
+    
+    public static void disconnect(){
+        try {
+            ClientInSocket.stop();
+            CONNECTION = false;
+        } catch (IOException ex) {
+            Logger.getLogger(ConnectionController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static void restart(){
+        ClientInSocket.send("restart;|");
+        DTWController.ACTIVE = false;
+        CONNECTION = false;
+        disconnect();
     }
 
     private static void handler_receive(String s) {
@@ -41,7 +61,7 @@ public class ConnectionController {
                 break;
             case "data":
                 DTWController.receive(data[1]);
-                
+
                 break;
 
         }

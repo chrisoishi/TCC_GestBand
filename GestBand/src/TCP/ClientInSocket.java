@@ -60,11 +60,17 @@ public class ClientInSocket {
         return true;
     }
 
-    public static void send(String s) throws IOException {
+    public static void send(String s) {
 
-        DataOutputStream dOut = new DataOutputStream(Server.getOutputStream());
-        System.out.println("sending:" + s);
-        dOut.writeBytes(s);
+        DataOutputStream dOut;
+        try {
+            dOut = new DataOutputStream(Server.getOutputStream());
+            System.out.println("sending:" + s);
+            dOut.writeBytes(s);
+        } catch (IOException ex) {
+            Logger.getLogger(ClientInSocket.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     public static void stop() throws IOException {

@@ -1,0 +1,53 @@
+.scroll-pane > .viewport {
+   -fx-background-color: transparent;
+}
+
+.scroll-pane{
+   -fx-background-color: transparent;
+}
+
+.button{
+-fx-background-color:  #263238;
+-fx-text-fill: white;
+}
+.button:hover{
+-fx-background-color:  #455a64;
+}
+
+.button-menu {
+    -fx-border: 0;
+    -fx-background-color: transparent;
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    -fx-font-size: 11pt;
+    -fx-text-fill: #d8d8d8;
+    -fx-background-insets: 0 0 0 0, 0, 1, 2;
+}
+
+.button-menu:hover {
+    -fx-background-color: #212121;
+    -fx-text-fill: white;
+    -fx-border-width:0;
+}
+
+.button-menu:focused {
+    -fx-background-color: #212121;
+}
+
+
+
+.button-menu:pressed, .button:default:hover:pressed {
+  -fx-background-color: #212121;
+}
+
+.grid-pane-content {
+    -fx-hgap: 10;
+    -fx-vgap: 10;
+}
+
+.header{
+    -fx-font-size: 20pt;
+}
+TextField{
+    -fx-pref-width: 250px;
+}
+
