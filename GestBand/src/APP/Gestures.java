@@ -17,6 +17,7 @@ public class Gestures {
     public String name;
     public int size;
     public String default_action;
+    public boolean is_check;
     public float[] acX = new float[1];
     public float[] acY = new float[1];
     public float[] acZ = new float[1];

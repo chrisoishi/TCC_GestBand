@@ -18,6 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
 import APP.Main;
+import APP.Profiles;
 import APP.Settings;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 
 /**
  *
@@ -110,12 +114,25 @@ public class MainController implements Initializable {
     private void show_gestos() {
         clear();
         title.setText("Gestos");
-
+        
         Label l = new Label();
         Button b = new Button();
+        l.setText("Nome do perfil:");
+        TextField tf_profilename = new TextField();
+        Profiles p = ProfileController.getSet();
+        if(p!=null)tf_profilename.setText(p.name);
+
+        print(l, 1);
+        println(tf_profilename, 1);
+
         for (int i = 0; i < GestureController.gestos.size(); i++) {
             int a = i;
             final Gestures g = GestureController.gestos.get(i);
+            final CheckBox cb = new CheckBox();
+            if(p!=null)cb.setSelected(p.gestos.get(i));
+            cb.setOnAction(value -> {
+                g.is_check = cb.selectedProperty().get();
+            });
             l = new Label();
             l.setText(g.name);
             b = new Button();
@@ -158,10 +175,37 @@ public class MainController implements Initializable {
 
             });
             tf.setText(g.default_action);
-            println(tf, 1);
+            print(tf, 1);
+            println(cb, 1);
 
         }
+        b = new Button();
+        b.setPrefWidth(200);
 
+        b.setText("Criar Perfil");
+        b.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if(p==null)ProfileController.perfis.add(new Profiles(tf_profilename.getText()));
+                else p.save(tf_profilename.getText());
+                System.out.println("Perfil Criado");
+                GestureController.clearCheck();
+                show_gestos();
+                
+            }
+        });
+        
+        ComboBox profiles = new ComboBox();
+        
+        profiles.setOnAction(value->{
+            ProfileController.set(profiles.getSelectionModel().getSelectedIndex());
+            show_gestos();
+        });
+        for(int i=0;i<ProfileController.perfis.size();i++){
+            profiles.getItems().add(ProfileController.perfis.get(i).name);
+        }
+        print(profiles,2);
+        println(b, 2);
     }
 
     private void show_app() {
@@ -190,7 +234,7 @@ public class MainController implements Initializable {
             });
             b.setPrefWidth(250);
             print(b, 1);
-            
+
             b = new Button("Salvar");
             b.setOnAction(event -> {
                 send_wifi_settings(ssid.getText(), pass.getText());
@@ -242,7 +286,7 @@ public class MainController implements Initializable {
                     Settings.set("last_ip", ip);
                     DTWController.ACTIVE = true;
                     show_pulseira();
-                    
+
                 } else {
                     set_status("Não foi possível se conectar. Verifique a conexão ou o IP", MainController.C_RED);
                 }
@@ -329,7 +373,7 @@ public class MainController implements Initializable {
     private void set_activation() {
         if (DTWController.ACTIVE) {
             ClientInSocket.send("send;|");
-            
+
             activation.setText("Parar reconhecimento");
             activation.setStyle("-fx-background-color:" + C_RED);
             set_status("A pulseira está reconhecendo os seus gestos..", C_BLUE);
@@ -356,8 +400,8 @@ public class MainController implements Initializable {
             DTWController.ACTIVE = !DTWController.ACTIVE;
             set_activation();
         });
-        
-        if(Settings.get("last_ip") != "undefined"){
+
+        if (Settings.get("last_ip") != "undefined") {
             try_connect(Settings.get("last_ip"));
         }
     }

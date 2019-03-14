@@ -157,10 +157,10 @@ public class DTWController {
         Gestures g;
         min = 70;
         certo = 0;
-        for (int i = 0; i < GestureController.gestos.size(); i++) {
+        for (int i = 0; i < GestureController.gestos_current.size(); i++) {
             m = 0;
 
-            g = GestureController.gestos.get(i);
+            g = GestureController.gestos_current.get(i);
             d = get_data(g.size);
             m += lDTW.compute(g.acX, d[0]).getDistance();
             m += lDTW.compute(g.acY, d[1]).getDistance();
@@ -178,7 +178,7 @@ public class DTWController {
             }
         }
         if (min < 70) {
-            g = GestureController.gestos.get(certo);
+            g = GestureController.gestos_current.get(certo);
             System.out.println("Gesto:" + g.name);
             clear();
             if(!g.default_action.equals(""))Simulation.pressKey(g.default_action);

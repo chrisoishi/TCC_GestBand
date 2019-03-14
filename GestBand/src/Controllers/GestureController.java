@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ComboBox;
 
 /**
  *
@@ -40,7 +42,6 @@ public class GestureController {
         } catch (IOException ex) {
             Logger.getLogger(GestureController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
 
     }
 
@@ -87,5 +88,12 @@ public class GestureController {
             }
         }
         reader.close();
+    }
+
+    public static void clearCheck() {
+        for (int i = 0; i < gestos.size(); i++) {
+            final Gestures g = gestos.get(i);
+            g.is_check = false;
+        }
     }
 }
