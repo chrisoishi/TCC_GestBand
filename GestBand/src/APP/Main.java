@@ -57,6 +57,7 @@ public class Main extends Application {
         Simulation.init();
         DTWController.init();
         GestureController.getGestures();
+        ProfileController.getProfiles();
 
     }
 

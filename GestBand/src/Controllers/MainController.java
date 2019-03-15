@@ -188,6 +188,7 @@ public class MainController implements Initializable {
             public void handle(ActionEvent event) {
                 if(p==null)ProfileController.perfis.add(new Profiles(tf_profilename.getText()));
                 else p.save(tf_profilename.getText());
+                ProfileController.saveProfile();
                 System.out.println("Perfil Criado");
                 GestureController.clearCheck();
                 show_gestos();

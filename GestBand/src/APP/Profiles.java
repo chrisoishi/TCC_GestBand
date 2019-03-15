@@ -34,4 +34,8 @@ public class Profiles {
             comandos.add(g.default_action);
         }
     }
+    public void clear(){
+        gestos.clear();
+        comandos.clear();
+    }
 }

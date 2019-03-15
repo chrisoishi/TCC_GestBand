@@ -1,0 +1,9 @@
+1
+[true, true, false, false, false]
+[DIGIT1, DIGIT1, DIGIT3, DIGIT3, SPACE]
+2
+[false, true, true, false, false]
+[DIGIT1, DIGIT2, DIGIT2, DIGIT3, SPACE]
+3
+[false, false, true, true, false]
+[DIGIT1, DIGIT2, DIGIT3, DIGIT3, SPACE]
