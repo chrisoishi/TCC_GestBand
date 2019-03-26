@@ -114,13 +114,15 @@ public class MainController implements Initializable {
     private void show_gestos() {
         clear();
         title.setText("Gestos");
-        
+        ComboBox profiles = new ComboBox();
         Label l = new Label();
         Button b = new Button();
         l.setText("Nome do perfil:");
         TextField tf_profilename = new TextField();
         Profiles p = ProfileController.getSet();
-        if(p!=null)tf_profilename.setText(p.name);
+        if (p != null) {
+            tf_profilename.setText(p.name);
+        }
 
         print(l, 1);
         println(tf_profilename, 1);
@@ -129,7 +131,9 @@ public class MainController implements Initializable {
             int a = i;
             final Gestures g = GestureController.gestos.get(i);
             final CheckBox cb = new CheckBox();
-            if(p!=null)cb.setSelected(p.gestos.get(i));
+            if (p != null) {
+                cb.setSelected(p.gestos.get(i));
+            }
             cb.setOnAction(value -> {
                 g.is_check = cb.selectedProperty().get();
             });
@@ -179,6 +183,53 @@ public class MainController implements Initializable {
             println(cb, 1);
 
         }
+
+        b = new Button();
+        b.setPrefWidth(200);
+
+        b.setText("Deletar Perfil");
+        b.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+                if (ProfileController.perfis.size() > 0) {
+                    if (ProfileController.set != -1) {
+                        ProfileController.perfis.remove(ProfileController.set);
+                        ProfileController.saveProfile();
+                        System.out.println("Perfil deletado");
+                        ProfileController.set = -1;
+                        show_gestos();
+                    } else if (ProfileController.set == -1) {
+                        System.out.println("Nenhum perfil selecionado");
+                    } else {
+                        System.out.println("Perfil nao existente");
+                    }
+                } else {
+                    System.out.println("Lista de perfils vazia");
+                }
+
+            }
+
+        });
+
+        profiles.setOnAction(value -> {
+            ProfileController.set(profiles.getSelectionModel().getSelectedIndex());
+            show_gestos();
+        });
+
+        
+        for (int i = 0; i < ProfileController.perfis.size(); i++) {
+            profiles.getItems().add(ProfileController.perfis.get(i).name);
+        }
+        
+        if(ProfileController.set != -1){
+            System.out.println("dfhdfhdf");
+            profiles.getSelectionModel().select(ProfileController.set);
+        }
+        print(profiles, 1);
+
+        print(b, 1);
+
         b = new Button();
         b.setPrefWidth(200);
 
@@ -186,26 +237,19 @@ public class MainController implements Initializable {
         b.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if(p==null)ProfileController.perfis.add(new Profiles(tf_profilename.getText()));
-                else p.save(tf_profilename.getText());
+                if (p == null) {
+                    ProfileController.perfis.add(new Profiles(tf_profilename.getText()));
+                } else {
+                    p.save(tf_profilename.getText());
+                }
                 ProfileController.saveProfile();
                 System.out.println("Perfil Criado");
                 GestureController.clearCheck();
                 show_gestos();
-                
+
             }
         });
-        
-        ComboBox profiles = new ComboBox();
-        
-        profiles.setOnAction(value->{
-            ProfileController.set(profiles.getSelectionModel().getSelectedIndex());
-            show_gestos();
-        });
-        for(int i=0;i<ProfileController.perfis.size();i++){
-            profiles.getItems().add(ProfileController.perfis.get(i).name);
-        }
-        print(profiles,2);
+
         println(b, 2);
     }
 
@@ -321,11 +365,11 @@ public class MainController implements Initializable {
 
 
 
-    @FXML
-    private void send_wifi_settings(ActionEvent event) throws IOException {
-        String s = "wifi;" + ssid.getText() + ";" + pass.getText() + ";|";
-        ClientInSocket.send(s);
-    }
+     @FXML
+     private void send_wifi_settings(ActionEvent event) throws IOException {
+     String s = "wifi;" + ssid.getText() + ";" + pass.getText() + ";|";
+     ClientInSocket.send(s);
+     }
 
 
 

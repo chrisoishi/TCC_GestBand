@@ -58,7 +58,6 @@ public class ProfileController {
             fw = new FileWriter(file);
             BufferedWriter writer = new BufferedWriter(fw);
             for (int i = 0; i < perfis.size(); i++) {
-                writer.append(System.getProperty("line.separator"));
                 writer.append(perfis.get(i).name);
                 writer.append(System.getProperty("line.separator"));
                 writer.append(perfis.get(i).gestos.toString());
