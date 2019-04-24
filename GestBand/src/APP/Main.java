@@ -61,7 +61,7 @@ public class Main extends Application {
 
     }
 
-    public static void show_graph() {
+    public static void show_graph(String title,boolean isView) {
         FXMLLoader loader = new FXMLLoader(w_graph);
         Main.Graph = new Graph();
 
@@ -77,7 +77,7 @@ public class Main extends Application {
                 }
 
             });
-            Graph.start(stage);
+            Graph.start(stage,title,isView);
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -89,5 +89,7 @@ public class Main extends Application {
         launch(args);
 
     }
+    
+    
 
 }

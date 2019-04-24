@@ -1,7 +1,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include<Wire.h>
-#include <ESP8266WiFi.h>
+//#include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <EEPROM.h>
 #include "vars.h"
@@ -24,13 +24,14 @@
 
 void setup() {
   Serial.begin(115200);
-  EEPROM.begin(512);
+  //EEPROM.begin(512);
   //ArduinoOTA.begin();
-  delay(10);
+  //delay(10);
   setup_OLED();
-  setup_sensor();  
-  delay(10);
+  //setup_sensor();  
+  //delay(10);
   initialize();
+  Serial.println("sdgdsg");
 }
 
 void init_configs(){
@@ -39,10 +40,10 @@ void init_configs(){
 }
 
 void initialize(){
-  init_configs();
-  read_configs();
+  //init_configs();
+  //read_configs();
   screen_logo();
-  setup_wifi();
+  //setup_wifi();
 }
 
 
@@ -61,51 +62,10 @@ void save_configs(){
 // ############################################################################################
 
 void wait_client(){
-  if(!gb_client){
-    WiFiClient client = server.available();
-    if (!client) {return;}
-    screen_change(0);
-    app_client = client;
-    gb_client=true;
-  }
-  else read_client();
 }
 
 void read_client(){
-  if(!app_client.connected()){
-    init_configs();
-    screen_change(0);
-  }
-  if(!app_client.available())return;
-  String req = app_client.readStringUntil('|');
-  String aux="";
-  for(int i=0;i<req.length();i++){
-    if(req[i]==';'){
-      if(aux=="wifi"){
-        read_wifi(req);
-      }
-      else if(aux=="send"){
-        gb_send_data=true;
-        gb_read_sensor = true;
-        screen_change(1);
-      }
-      else if(aux=="send_wifi"){
-        send_wifi();
-      }
-      else if(aux=="stop"){
-        gb_send_data=false;
-      }
-      else if(aux=="restart"){
-        initialize();
-      }
-      else if(aux=="profile"){
-        read_profile(req);
-      }
-      return;
-      }
-      else aux+= req[i];
-    }
-  app_client.flush();
+
 }
 
 // ############################################################################################
@@ -113,54 +73,9 @@ void read_client(){
 // ############################################################################################
 
 void send_wifi(){
-   OLED.clearDisplay();
-  OLED.setCursor(0,0);
-  OLED.println("Sending wifi configs"); 
-  OLED.display(); 
-  sprintf(buf2,"wifi;ssid:%s;pass:%s;|",ssid.c_str(),pass.c_str());
-  app_client.print(buf2); 
 }
 
 void read_wifi(String req){
-  OLED.clearDisplay();
-  OLED.setCursor(0,0);
-  OLED.println("Saving wifi...");
-  OLED.display();
-  String aux;
-  int data_item=0;
-  for(int i=0;i<req.length();i++){
-    if(req[i]==';'){
-      if(data_item==1)ssid=aux;
-      else if(data_item==2)pass=aux;
-      data_item++;
-      aux="";
-    }
-    else aux+= req[i];
-  }
-  save_configs();
-  delay(1000);
-  OLED.clearDisplay();
-  OLED.setCursor(0,0);
-  OLED.println("Wifi Saved!"); 
-  OLED.display(); 
-}
-
-void read_profile(String req){
-  String aux;
-  int data_item=0;
-  for(int i=0;i<req.length();i++){
-    if(req[i]==';'){
-      if(data_item==1){
-        profile=aux;
-        Serial.println(req);
-        Serial.println(aux);
-        return;
-      }
-      data_item++;
-      aux="";
-    }
-    else aux+= req[i];
-  }
 }
 
 
@@ -169,26 +84,7 @@ void read_profile(String req){
 // ############################################################################################
 
 void send_data(){
-  if(gb_send_data){   
-      app_client.print("data;A:");
-      app_client.print(AcX);
-      app_client.print(":");
-      app_client.print(AcY);
-      app_client.print(":");
-      app_client.print(AcZ);
-      app_client.print("|");
-      app_client.print("data;G:");
-      app_client.print(GyX);
-      app_client.print(":");
-      app_client.print(GyY);
-      app_client.print(":");
-      app_client.print(GyZ);
-      app_client.print("|");
-      //sprintf(buf,"data;A:%d:%d:%d|",AcX,AcY,AcZ);
-      //app_client.print(buf);
-      // sprintf(buf,"data;G:%d:%d:%d|",GyX,GyY,GyZ);
-      //app_client.print(buf);
-   }
+
  }
 
 // ############################################################################################
@@ -252,14 +148,15 @@ void send_data(){
 
 
 void loop() {
-  wait_client();
-  read_sensor();
-  send_data();
-  battery_read();
-  button();
-  rgb();
-  screen();
-  delay(5);
-  global_tick++;
-  if(global_tick==10000)global_tick=0;
+  //ArduinoOTA.handle();
+  //wait_client();
+  //read_sensor();
+  //send_data();
+  //battery_read();
+  //button();
+  //rgb();
+  //screen();
+  //delay(5);
+  //global_tick++;
+  //if(global_tick==10000)global_tick=0;
 }

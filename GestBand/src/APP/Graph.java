@@ -76,9 +76,7 @@ public class Graph {
     TextField txtBegin = new TextField();
     TextField txtEnd = new TextField();
 
-    private void init(Stage primaryStage) {
-
-        Label label1 = new Label("Name:");
+    private void init(Stage primaryStage, boolean isView) {
 
         xAxis = new NumberAxis(0, MAX_DATA_POINTS, MAX_DATA_POINTS / 10);
         xAxis.setForceZeroInRange(false);
@@ -170,20 +168,6 @@ public class Graph {
             }
         });
 
-        btnTest.setText("Test");
-        btnTest.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-
-                if (test) {
-                    test = false;
-                } else {
-                    test = true;
-                }
-            }
-        });
-
         NumberAxis yAxis = new NumberAxis();
         NumberAxis yAxis1 = new NumberAxis();
 
@@ -231,43 +215,45 @@ public class Graph {
         GridPane new_gesture_pane = new GridPane();
         new_gesture_pane.getStyleClass().add("grid-pane-content");
         new_gesture_pane.setStyle("-fx-padding:10");
+        Scene scene;
+        if (!isView) {
+            root.add(new_gesture_pane, 0, 2, 2, 1);
+            instruction.setAlignment(Pos.CENTER);
+            instruction.setStyle("-fx-font-size: 20pt;");
+            instruction.setText("...");
+            instruction.setPrefWidth(1000);
+            root.add(instruction, 0, 3, 2, 1);
+            new_gesture_pane.add(lHeader("Gesto"), 0, 0, 2, 1);
 
-        root.add(new_gesture_pane, 0, 2, 2, 1);
-        instruction.setAlignment(Pos.CENTER);
-        instruction.setStyle("-fx-font-size: 20pt;");
-        instruction.setText("...");
-        instruction.setPrefWidth(1000);
-        root.add(instruction, 0, 3, 2, 1);
+            new_gesture_pane.add(new Label("Nome do Gesto"), 0, 1);
+            new_gesture_pane.add(txtName, 1, 1);
 
-        new_gesture_pane.add(MainController.lHeader("Gesto"), 0, 0, 2, 1);
+            new_gesture_pane.add(lHeader("Gravar"), 3, 0, 2, 1);
+            btnStart.setPrefWidth(250);
+            new_gesture_pane.add(btnStart, 3, 1);
 
-        new_gesture_pane.add(new Label("Nome do Gesto"), 0, 1);
-        new_gesture_pane.add(txtName, 1, 1);
+            new_gesture_pane.add(lHeader("Intervalo de dados"), 5, 0, 2, 1);
 
-        new_gesture_pane.add(MainController.lHeader("Gravar"), 3, 0, 2, 1);
-        btnStart.setPrefWidth(250);
-        new_gesture_pane.add(btnStart, 3, 1);
+            new_gesture_pane.add(new Label("Inicio"), 5, 1);
+            new_gesture_pane.add(txtBegin, 6, 1);
 
-        new_gesture_pane.add(MainController.lHeader("Intervalo de dados"), 5, 0, 2, 1);
-
-        new_gesture_pane.add(new Label("Inicio"), 5, 1);
-        new_gesture_pane.add(txtBegin, 6, 1);
-
-        new_gesture_pane.add(new Label("Fim"), 5, 2);
-        new_gesture_pane.add(txtEnd, 6, 2);
-        btnSave.setPrefWidth(300);
-        new_gesture_pane.add(btnSave, 5, 3, 2, 1);
-
+            new_gesture_pane.add(new Label("Fim"), 5, 2);
+            new_gesture_pane.add(txtEnd, 6, 2);
+            btnSave.setPrefWidth(300);
+            new_gesture_pane.add(btnSave, 5, 3, 2, 1);
+            scene = new Scene(root, 1000, 700);
+        }
+        else scene = new Scene(root, 1000, 300);
         //root.getChildren().addAll(btnStop, btnSave, btnClear, btnTest, btnRead, textField, txtBegin, txtEnd);
-        Scene scene = new Scene(root, 1000, 700);
+        
         primaryStage.setScene(scene);
 
     }
 
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage, String title,boolean isView) throws IOException {
 
-        stage.setTitle("GestBand");
-        init(stage);
+        stage.setTitle(title);
+        init(stage, isView);
         stage.show();
 
         executor = Executors.newCachedThreadPool(new ThreadFactory() {
@@ -385,8 +371,7 @@ public class Graph {
             instruction.setText("Seu gesto foi salvo!!!");
             clear();
             txtName.setText("");
-        }
-        else{
+        } else {
             instruction.setText("Digite um nome para seu novo gesto!");
         }
     }
@@ -466,4 +451,10 @@ public class Graph {
 
     }
 
+    private Label lHeader(String text) {
+        Label l = new Label();
+        l.setText(text);
+        l.getStyleClass().add("header");
+        return l;
+    }
 }

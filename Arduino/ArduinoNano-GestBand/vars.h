@@ -2,10 +2,10 @@
 const int batteryPin = A0;
 //const int sclPin = D1;
 //const int sdaPin = D2;
-const int buttonPin = D3;
-const int redPin = D5;
-const int greenPin = D6;
-const int bluePin = D7;
+const int buttonPin = 3;
+const int redPin = 5;
+const int greenPin = 6;
+const int bluePin = 7;
 
 // #### OLED ####
 #define OLED_RESET 0  // GPIO0
@@ -42,8 +42,8 @@ String pass = ""; //Password of your Wi-Fi router
 String ip = "";
 char ssid_server[] = "GestBand"; //SSID of your Wi-Fi router
 char pass_server[] = "inyourcontrol"; //Password of your Wi-Fi router
-WiFiClient app_client;
-WiFiServer server(3322);
+//WiFiClient app_client;
+//WiFiServer server(3322);
 bool wifi_access_point;
 
 // #### PROTOCOLO ####
@@ -57,9 +57,3 @@ int button_tick;
 int global_tick;
 bool screen_off = false;
 bool wifi_to_off = false;
-
-// #### PROFILE ####
-String profile = "";
-
-// #### MENU ####
-const String menu_title[] = {"Início","Sensor","Controle","Infos"};

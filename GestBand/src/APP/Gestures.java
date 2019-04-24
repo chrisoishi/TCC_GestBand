@@ -26,6 +26,7 @@ public class Gestures {
     public float[] gZ = new float[1];
     
     public Gestures(String name,int size,float[] acX, float[] acY, float[] acZ, float[] gX, float[] gY, float[] gZ ){
+        this.default_action = "";
         this.size = size;
         this.name= name;
         this.acX = acX;

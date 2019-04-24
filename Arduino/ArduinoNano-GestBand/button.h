@@ -34,24 +34,13 @@ void button(){
     if(button_up()){
       if(button_tick<50){
         screen_wake();
-        if(menu_active == -1){
-          if(screen_active != 2){
-             menu_active = screen_active;
-          }
-          else {
-            if(gb_client)app_client.print("profile;|"); 
-          }
-        }
-        else{
-          menu_next();
-        }
-
+        screen_next();
+        
       }
       button_tick = 0;
     }
     if(button_tick>128){
-      if(screen_active != 2)screen_shutdown();
-      else menu_active = 0;
+      screen_shutdown();
     }
     if(button_press)button_tick++;
 }

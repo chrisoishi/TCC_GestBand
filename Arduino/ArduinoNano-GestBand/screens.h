@@ -2,12 +2,9 @@
 
 int tick_top_bar = 0;
 int tick_screen = 0;
-int tick_menu = 0;
 int screen_active = 0;
-int menu_active = -1;
 bool screen_refresh = true;
 bool screen_update = false;
-bool onInit = false;
 
 
 void clear_pixel(int x,int y,int width,int height){
@@ -39,25 +36,12 @@ void screen_change(int s){
   screen_refresh = true;
   tick_screen = 0;
   gb_read_sensor = false;
-  onInit = true;
 }
 
-void menu_next(){
-  menu_active++;
-  tick_menu = 0;
-  if(menu_active==3)menu_active=0;
+void screen_next(){
+  screen_active++;
+  if(screen_active==3)screen_active=0;
   screen_change(screen_active);
-}
-void menu_await(){
-  if(menu_active > -1){
-    if(tick_menu>=15){
-       screen_change(menu_active);
-       menu_active = -1;
-       tick_menu = 0;
-    }
-    else tick_menu++;
-    Serial.println(tick_menu);
-  }
 }
 
 void screen_shutdown(){
@@ -66,7 +50,6 @@ void screen_shutdown(){
   wifi_to_off = true;
   OLED.display();
   if(!gb_send_data){
-    WiFi.forceSleepBegin();
     rgb_set_color(0,0,0);
     delay(1000);
   }
@@ -74,17 +57,6 @@ void screen_shutdown(){
 void screen_wake(){
    if(screen_off){
           screen_off = false;
-          WiFi.forceSleepWake();
-        if(!gb_client){
-             if(!wifi_access_point){
-                //WiFi.mode(WIFI_STA);
-                WiFi.begin(ssid.c_str(), pass.c_str());
-             }
-             else{
-                //WiFi.mode(WIFI_AP);
-                WiFi.softAP(ssid_server, pass_server);
-             }
-        }
    }
 }
 
@@ -93,16 +65,6 @@ void screen_logo(){
   OLED.setCursor(0,0);
   OLED.drawBitmap(0, 16, bmp_gestband, 128, 32, 1);
   //OLED.display();
-}
-
-void screen_menu(){
-  OLED.clearDisplay();
-   OLED.setCursor(0,0);
-   if(menu_active==0)OLED.drawBitmap(52, 24, icon_home, 24,24, 1);
-   else if(menu_active==1)OLED.drawBitmap(52, 24, icon_gesture, 24,24, 1);
-   else if(menu_active==2)OLED.drawBitmap(52, 24, icon_profile, 24,24, 1);
-   else if(menu_active==3)OLED.drawBitmap(52, 24, icon_info, 24,24, 1);
-   text_center(50,menu_title[menu_active]);
 }
 
 void screen_top_bar(){
@@ -170,12 +132,12 @@ void screen_ip(){
   
   if(wifi_access_point){
     text_center(27,"WiFi: GestBand");
-    text_center(37,"GB IP:"+WiFi.softAPIP().toString());
+    text_center(37,"GB IP:");
   }
   else {
     if(!gb_client)text_center(27,"Connect APP to");
     else text_center(27,"GestBand");
-    text_center(37,"IP:"+WiFi.localIP().toString());
+    text_center(37,"IP:");
   }
   screen_refresh = false;
   //OLED.display();
@@ -208,37 +170,25 @@ void screen_sensor(){
   
 }
 void screen_profile(){
-  clear_pixel(0,8,128,56); 
   if(gb_client){
-    if(onInit){
-      app_client.print("profile;|"); 
-      onInit = false;
-    }
-    text_center(18,profile);   
-  }
-  else{
-    text_center(18,"waiting connection..."); 
+    clear_pixel(0,8,128,56); 
+    text_center(18,"Perfil");   
   }
 }
 
 void screen(){
   if(!screen_off){
     if(tick_screen%15==0){
-      if(menu_active==-1){
-        screen_top_bar();
-        if(screen_refresh){
-          if(screen_active==0)screen_ip();
-          else if(screen_active==1)screen_sensor();
-          else if(screen_active==2)screen_profile();
-        }
+      screen_top_bar();
+      if(screen_refresh){
+        if(screen_active==0)screen_ip();
+        else if(screen_active==1)screen_sensor();
+        else if(screen_active==2)screen_profile();
       }
-      else screen_menu();
-      menu_await();
       OLED.display();
     }
 
   }
   tick_screen++;
- 
   if(tick_screen==2000)tick_screen=0;
 }

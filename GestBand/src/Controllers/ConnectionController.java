@@ -12,6 +12,7 @@ import TCP.ClientInSocket;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.concurrent.Task;
 
 /**
  *
@@ -21,6 +22,8 @@ public class ConnectionController {
 
     private static String s = "";
     public static boolean CONNECTION = false;
+    public static boolean CONNECTING = false;
+    public static Thread thread;
 
     public static boolean connect_to_gestband(String ip) throws IOException {
         ClientInSocket.Actions actionsReceive = new ClientInSocket.Actions() {
@@ -36,8 +39,8 @@ public class ConnectionController {
         CONNECTION = ClientInSocket.Start(actionsReceive, ip);
         return CONNECTION;
     }
-    
-    public static void disconnect(){
+
+    public static void disconnect() {
         try {
             ClientInSocket.stop();
             CONNECTION = false;
@@ -45,8 +48,8 @@ public class ConnectionController {
             Logger.getLogger(ConnectionController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public static void restart(){
+
+    public static void restart() {
         ClientInSocket.send("restart;|");
         DTWController.ACTIVE = false;
         CONNECTION = false;
@@ -61,6 +64,24 @@ public class ConnectionController {
                 break;
             case "data":
                 DTWController.receive(data[1]);
+
+                break;
+            case "profile":
+                ProfileController.nextSet();
+                ClientInSocket.send("profile;" + ProfileController.getSet().name + ";|");
+                Task t = new Task() {
+                    @Override
+                    protected Object call() throws Exception {
+                        return true;
+                    }
+
+                    @Override
+                    protected void succeeded() {
+                        controller.set_status();
+                        controller.show_profiles();
+                    }
+                };
+                new Thread(t).start();
 
                 break;
 

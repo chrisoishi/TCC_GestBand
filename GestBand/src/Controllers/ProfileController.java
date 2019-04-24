@@ -6,8 +6,8 @@
 package Controllers;
 
 import APP.Gestures;
+import APP.Main;
 import APP.Profiles;
-import static Controllers.GestureController.gestos;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -35,11 +35,21 @@ public class ProfileController {
         GestureController.gestos_current.clear();
         for (int i = 0; i < GestureController.gestos.size(); i++) {
             final Gestures g = GestureController.gestos.get(i);
-            g.is_check = p.gestos.get(i);
-            g.default_action = p.comandos.get(i);
+            if(i<p.gestos.size())g.is_check = p.gestos.get(i);
+            else g.is_check  = false;
+            if(i<p.comandos.size())g.default_action = p.comandos.get(i);
+            else g.default_action="";
+            
             if (g.is_check) {
                 GestureController.gestos_current.add(g);
             }
+        }
+    }
+    public static void nextSet(){
+        set++;
+        if(set==perfis.size())set(0);
+        else {
+            set(set);
         }
     }
 
@@ -93,21 +103,38 @@ public class ProfileController {
                 s2 = st.split(", ");
                 for (int i = 0; i < s2.length; i++) {
                     btemp = s2[i].equals("true")?true:false;
-                    p.gestos.add(btemp);
+                    if(i<GestureController.gestos.size())p.gestos.add(btemp);
                 }
                 count++;
             } else if (count == 2) {
                 st = st.substring(1, st.length() - 1);
                 s2 = st.split(", ");
+                System.out.println(s2.length);
                 for (int i = 0; i < s2.length; i++) {
-                    p.comandos.add(s2[i]);
+                    if(i<GestureController.gestos.size())p.comandos.add(s2[i]);
                 }
                 count = 0;
                 perfis.add(p);
-                System.out.println(p.gestos.toString());
             }
 
         }
         reader.close();
+    }
+    
+    public static void sync_deleted_gesture(int index){
+        List<Profiles> aux_perfis = new ArrayList<>();
+        Profiles aux;
+        for(int i=0;i<perfis.size();i++){
+            aux = new Profiles(perfis.get(i).name);
+            for(int j=0;j<perfis.get(i).gestos.size();j++){
+                if(j!= index && j<GestureController.gestos.size()){
+                    aux.gestos.add(perfis.get(i).gestos.get(j));
+                    aux.comandos.add(perfis.get(i).comandos.get(j));
+                }
+            }
+            aux_perfis.add(aux);
+        }
+        perfis = aux_perfis;
+        saveProfile();
     }
 }
