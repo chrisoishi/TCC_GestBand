@@ -2,7 +2,6 @@ int r_set,g_set,b_set;
 int r_aux,g_aux,b_aux;
 int r_dir,g_dir,b_dir;
 int fade_speed = 1;
-int rgb_tick=0;
 
 void rgb_set_color(int r,int g,int b){
     r_set = r;
@@ -82,6 +81,9 @@ void rgb_alert(){
           int t = global_tick%1500;
           if(t==200)rgb_fade_color(0,0,0,2);
           else if(t==0)rgb_show_battery(2);
+      }
+      else{
+        if(global_tick%100==0)rgb_fade_color(0,0,0,20);
       }
     }
     else{

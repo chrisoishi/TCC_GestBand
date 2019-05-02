@@ -1,5 +1,3 @@
-int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;
-
 void setup_OLED(){
   OLED.begin(SSD1306_SWITCHCAPVCC, 0x3c);
   OLED.clearDisplay();
@@ -20,3 +18,21 @@ void setup_sensor(){
   Wire.write(0);     // set to zero (wakes up the MPU-6050)
   Wire.endTransmission(true);
 }
+
+void reset_vars(){
+  gb_client = false;
+  gb_send_data = false;  
+}
+
+void setup_all(){
+  reset_vars();
+  setup_OLED();
+  setup_sensor();  
+}
+
+void initialize(){
+  reset_vars();
+  read_configs();
+  setup_controller();
+}
+  

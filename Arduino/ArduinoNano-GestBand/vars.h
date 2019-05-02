@@ -1,15 +1,6 @@
-// #### PINOS ####
-const int batteryPin = A0;
-//const int sclPin = D1;
-//const int sdaPin = D2;
-const int buttonPin = 3;
-const int redPin = 5;
-const int greenPin = 6;
-const int bluePin = 7;
-
 // #### OLED ####
 #define OLED_RESET 0  // GPIO0
-Adafruit_SSD1306 OLED(128,64,&Wire,OLED_RESET);
+Adafruit_SSD1306 OLED(screenWidth,screenHeight,&Wire,OLED_RESET);
 
 // #### BATERIA ####
 const int bat_max_charge = 110;//Porcento
@@ -42,9 +33,8 @@ String pass = ""; //Password of your Wi-Fi router
 String ip = "";
 char ssid_server[] = "GestBand"; //SSID of your Wi-Fi router
 char pass_server[] = "inyourcontrol"; //Password of your Wi-Fi router
-//WiFiClient app_client;
-//WiFiServer server(3322);
 bool wifi_access_point;
+
 
 // #### PROTOCOLO ####
 bool gb_client = false;
@@ -52,8 +42,13 @@ bool gb_send_data = false;
 bool gb_read_sensor = false;
 
 // #### OUTROS ####
-int counter_ticks;
 int button_tick;
 int global_tick;
 bool screen_off = false;
 bool wifi_to_off = false;
+
+// #### PROFILE ####
+String profile = "";
+
+// #### MENU ####
+const String menu_title[] = {"Home","Sensor","App Control","Infos"};

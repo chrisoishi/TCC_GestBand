@@ -1,3 +1,5 @@
+int counter_ticks;
+
 bool counter(int t){
   if(t>0){
     counter_ticks = t;

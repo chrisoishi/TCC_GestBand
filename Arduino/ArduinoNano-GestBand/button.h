@@ -1,4 +1,3 @@
-
 bool button_press;
 
 bool button_click(){
@@ -29,18 +28,37 @@ void button_down(){
     }
 }
 
+// ############################################################################################
+// ACTIONS BUTTON
+// ############################################################################################
+void button_action_click(){
+  screen_wake();
+        if(menu_active == -1){
+          if(screen_active != 2){
+             menu_active = screen_active;
+          }
+          else {
+            if(gb_client)app_client.print("profile;|");
+            else menu_active = screen_active;
+          }
+        }
+        else{
+          menu_next();
+        }
+
+}
+
+void button_action_pressed(){
+  if(screen_active != 2)screen_shutdown();
+      else menu_active = 0;
+}
+
 void button(){
     button_down();
     if(button_up()){
-      if(button_tick<50){
-        screen_wake();
-        screen_next();
-        
-      }
+      if(button_tick<50)button_action_click();
       button_tick = 0;
     }
-    if(button_tick>128){
-      screen_shutdown();
-    }
+    if(button_tick>128)button_action_pressed();
     if(button_press)button_tick++;
 }
