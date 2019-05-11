@@ -32,7 +32,6 @@ void setup_all(){
 
 void initialize(){
   reset_vars();
-  read_configs();
   setup_controller();
 }
   

@@ -1,6 +1,7 @@
 bool button_press;
 
 bool button_click(){
+    //Serial.println(digitalRead(buttonPin));
     if(digitalRead(buttonPin)==0){
       return true;
     }

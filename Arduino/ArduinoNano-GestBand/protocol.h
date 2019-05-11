@@ -2,14 +2,7 @@
 // SEND
 // ############################################################################################
 
-void protocol_send_wifi(){
-  OLED.clearDisplay();
-  OLED.setCursor(0,0);
-  OLED.println("Sending wifi configs"); 
-  OLED.display(); 
-  sprintf(buf2,"wifi;ssid:%s;pass:%s;|",ssid.c_str(),pass.c_str());
-  app_client.print(buf2); 
-}
+void protocol_send_wifi(){}
 
 void protocol_send_data_sensor(){
   if(gb_send_data){   
@@ -36,29 +29,7 @@ void protocol_send_data_sensor(){
 // ############################################################################################
 
 
-void protocol_read_wifi(String req){
-  OLED.clearDisplay();
-  OLED.setCursor(0,0);
-  OLED.println("Saving wifi...");
-  OLED.display();
-  String aux;
-  int data_item=0;
-  for(int i=0;i<req.length();i++){
-    if(req[i]==';'){
-      if(data_item==1)ssid=aux;
-      else if(data_item==2)pass=aux;
-      data_item++;
-      aux="";
-    }
-    else aux+= req[i];
-  }
-  save_configs();
-  delay(1000);
-  OLED.clearDisplay();
-  OLED.setCursor(0,0);
-  OLED.println("Wifi Saved!"); 
-  OLED.display(); 
-}
+void protocol_read_wifi(String req){ }
 
 
 void protocol_read_profile(String req){

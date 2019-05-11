@@ -26,11 +26,13 @@
 
 void setup() {
   Serial.begin(115200);
-  EEPROM.begin(512);
+  //EEPROM.begin(512);
+  app_client.begin(115200);
   delay(10);
   setup_all();
   delay(10);
   initialize();
+  
 }
 
 void loop() {

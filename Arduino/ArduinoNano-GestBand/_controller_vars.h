@@ -1,18 +1,17 @@
-#include <ESP8266WiFi.h>
-#include <WiFiClient.h>
+#include <SoftwareSerial.h>
 
 // #### PINOS ####
-const int batteryPin = A0;
-const int buttonPin = D3;
-const int redPin = D5;
-const int greenPin = D6;
-const int bluePin = D7;
+const int batteryPin = A3;
+const int buttonPin = 8;
+const int redPin = 9;
+const int greenPin = 10;
+const int bluePin = 11;
+const int btStatePin = 3;
 
 
 // #### OLED ####
 int screenWidth = 128;
-int screenHeight = 64;
+int screenHeight = 32;
 
 // #### WIFI ####
-WiFiClient app_client;
-WiFiServer server(3322);
+SoftwareSerial app_client(4,5);

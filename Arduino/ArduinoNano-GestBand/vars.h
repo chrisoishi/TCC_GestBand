@@ -3,16 +3,16 @@
 Adafruit_SSD1306 OLED(screenWidth,screenHeight,&Wire,OLED_RESET);
 
 // #### BATERIA ####
-const int bat_max_charge = 110;//Porcento
+const int8_t bat_max_charge = 110;//Porcento
 const float bat_read_max = 4.2*0.49/3.3*1024;// 3.95V -> 100%
 const float bat_read_min = 3.6*0.49/3.3*1024;//  3.60V - > 0%;
 const float bat_min_por = bat_read_min/bat_read_max;
-const float bat_range = 1-bat_min_por;
-int buff_battery[100];
-int buff_battery_i;
-int charge_diff = 0;
-int battery_level = 255;
-int battery_level_show = 1;
+const float bat_range = 0.28;
+int8_t buff_battery[100];
+int8_t buff_battery_i;
+int8_t charge_diff = 0;
+int8_t battery_level = 255;
+int8_t battery_level_show = 1;
 bool is_charging;
 bool deep_sleep = false;
 // #### LED RGB ####
@@ -27,20 +27,14 @@ char buf[10];
 char buf2[256];
 int sensor_range = 500;
 
-// #### WIFI ####
-String ssid = ""; //SSID of your Wi-Fi router
-String pass = ""; //Password of your Wi-Fi router
-String ip = "";
-char ssid_server[] = "GestBand"; //SSID of your Wi-Fi router
-char pass_server[] = "inyourcontrol"; //Password of your Wi-Fi router
-bool wifi_access_point;
+
 
 
 // #### PROTOCOLO ####
 bool gb_client = false;
 bool gb_send_data = false;
 bool gb_read_sensor = false;
-
+String data_protocol;
 // #### OUTROS ####
 int button_tick;
 int global_tick;

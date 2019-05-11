@@ -1,7 +1,7 @@
 int tick_top_bar = 0;
 int tick_screen = 0;
 int tick_menu = 0;
-int screen_active = 0;
+int screen_active = 1;
 int menu_active = -1;
 bool screen_refresh = true;
 bool screen_update = false;
@@ -60,7 +60,7 @@ void menu_await(){
        tick_menu = 0;
     }
     else tick_menu++;
-    Serial.println(tick_menu);
+    //Serial.println(tick_menu);
   }
 }
 
@@ -131,8 +131,10 @@ void screen_top_bar(){
   
   if(is_charging)OLED.drawBitmap(105, 0, bmp_charge, 8, 8, 1);
   if(battery_level_show>0 || tick_top_bar%2==0){
-      OLED.drawBitmap(112, 0, bmp_battery, 16, 8, 1);
-      draw(117,1,battery_level_show/10,6);
+      //OLED.drawBitmap(112, 0, bmp_battery, 16, 8, 1);
+     // draw(117,1,battery_level_show/10,6);
+     OLED.setCursor(100,0);
+     OLED.print(battery_level_show);
   }
 
   tick_top_bar++;
@@ -151,7 +153,7 @@ void screen_logo(int y){
   OLED.clearDisplay();
   OLED.setCursor(0,0);
   OLED.drawBitmap(0, y, bmp_gestband, 128, 32, 1);
-  //OLED.display();
+  OLED.display();
 }
 
 void screen_menu(){
@@ -167,41 +169,33 @@ void screen_menu(){
 
 void screen_connect(){
   clear_pixel(0,8,128,screenHeight-8);
-  if(wifi_access_point){
-    text_center(27,"WiFi: GestBand");
-    text_center(37,"GB IP:"+WiFi.softAPIP().toString());
-  }
-  else {
-    if(!gb_client)text_center(27,"Connect APP to");
-    else text_center(27,"GestBand");
-    text_center(37,"IP:"+WiFi.localIP().toString());
-  }
+
   screen_refresh = false;
   //OLED.display();
 }
 
 
 void screen_sensor(){
-  
   gb_read_sensor = true;
   screen_update = true;
   clear_pixel(0,8,128,screenHeight-8);
-  OLED.setCursor(0,27);
+  
+  OLED.setCursor(0,10);
   OLED.print("Ac:");
-  OLED.setCursor(20,27);
+  OLED.setCursor(20,10);
   OLED.print(AcX);
-  OLED.setCursor(50,27);
+  OLED.setCursor(50,10);
   OLED.print(AcY);
-  OLED.setCursor(80,27);
+  OLED.setCursor(80,10);
   OLED.print(AcZ);
   
-  OLED.setCursor(0,37);
+  OLED.setCursor(0,20);
   OLED.print("Gy:");
-  OLED.setCursor(20,37);
+  OLED.setCursor(20,20);
   OLED.print(GyX);
-  OLED.setCursor(50,37);
+  OLED.setCursor(50,20);
   OLED.print(GyY);
-  OLED.setCursor(80,37);
+  OLED.setCursor(80,20);
   OLED.print(GyZ);
   
   //OLED.display();
