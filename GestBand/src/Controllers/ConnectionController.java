@@ -181,8 +181,8 @@ public class ConnectionController {
                 long lat = protocol.latency();
                 if (MEDIA_LATENCY_I > 10) {
                     AMOSTRAS++;
-                    
-                    System.out.println("########### LATENCIA MEDIA DATA:" + MEDIA_LATENCY / 10 + " ms");
+                    System.out.println(MEDIA_LATENCY/10);
+                    //System.out.println("########### LATENCIA MEDIA DATA:" + MEDIA_LATENCY / 10 + " ms");
                     if(AMOSTRAS==100)System.out.println("DEU 100 AMOSTRAS");
                     MEDIA_LATENCY = 0;
                     MEDIA_LATENCY_I = 0;
@@ -295,6 +295,7 @@ public class ConnectionController {
         }
 
         public void test_connection() {
+            if(test != null)test.stop();
             test = new Thread() {
                 public void run() {
                     try {
