@@ -38,20 +38,24 @@ public class DTWController {
 
     public static void receive(String s) {
 
-        buff = s.split(":");
-        if (buff[0].equals("A")) {
-            add_data(buff[1], 0);
-            add_data(buff[2], 1);
-            add_data(buff[3], 2);
-            Graph.print(0, buff);
-            position(buff);
-        } else {
-            add_data(buff[1], 3);
-            add_data(buff[2], 4);
-            add_data(buff[3], 5);
-            Graph.print(1, buff);
-            moving(buff);
-            execute();
+        try {
+            buff = s.split(":");
+            if (buff[0].equals("A")) {
+                add_data(buff[1], 0);
+                add_data(buff[2], 1);
+                add_data(buff[3], 2);
+                Graph.print(0, buff);
+                position(buff);
+            } else {
+                add_data(buff[1], 3);
+                add_data(buff[2], 4);
+                add_data(buff[3], 5);
+                Graph.print(1, buff);
+                moving(buff);
+                execute();
+            }
+        }catch(Exception e){
+            System.out.println("erros nos dados....");
         }
 
     }
@@ -66,11 +70,11 @@ public class DTWController {
                 buff_position += 1;
                 if (buff_position == 70) {
                     GB_INITIAL = true;
-                    System.out.println("inicio");
+                   // System.out.println("inicio");
                 }
             }
         } else if (GB_INITIAL) {
-            System.out.println("inicio cancelado");
+            //System.out.println("inicio cancelado");
             GB_INITIAL = false;
             buff_position = 0;
         }
@@ -181,7 +185,9 @@ public class DTWController {
             g = GestureController.gestos_current.get(certo);
             System.out.println("Gesto:" + g.name);
             clear();
-            if(!g.default_action.equals(""))Simulation.pressKey(g.default_action);
+            if (!g.default_action.equals("")) {
+                Simulation.pressKey(g.default_action);
+            }
         }
     }
 

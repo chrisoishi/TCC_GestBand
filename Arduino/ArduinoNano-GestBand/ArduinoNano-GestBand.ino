@@ -1,8 +1,8 @@
-#include <Adafruit_GFX.h>
+//#include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include<Wire.h>
-#include "includes/bitmaps.h"
-#include "includes/extras.h";
+#include "bitmaps.h"
+#include "extras.h";
 #include "_controller_vars.h"
 #include "vars.h"
 #include "_controller_functions.h"

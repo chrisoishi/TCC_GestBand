@@ -1,8 +1,8 @@
-int tick_top_bar = 0;
-int tick_screen = 0;
-int tick_menu = 0;
-int screen_active = 1;
-int menu_active = -1;
+int16_t tick_top_bar = 0;
+int16_t tick_screen = 0;
+int16_t tick_menu = 0;
+int8_t screen_active = 1;
+int8_t menu_active = -1;
 bool screen_refresh = true;
 bool screen_update = false;
 bool onInit = false;
@@ -134,7 +134,8 @@ void screen_top_bar(){
       //OLED.drawBitmap(112, 0, bmp_battery, 16, 8, 1);
      // draw(117,1,battery_level_show/10,6);
      OLED.setCursor(100,0);
-     OLED.print(battery_level_show);
+     //OLED.print(battery_level_show);
+     OLED.print(analogRead(batteryPin));
   }
 
   tick_top_bar++;
@@ -152,19 +153,19 @@ void screen_top_bar(){
 void screen_logo(int y){
   OLED.clearDisplay();
   OLED.setCursor(0,0);
-  OLED.drawBitmap(0, y, bmp_gestband, 128, 32, 1);
+  OLED.drawBitmap(0, 0, bmp_gestband, 128, 32, WHITE);
   OLED.display();
 }
 
 void screen_menu(){
   int y = (screenHeight-24)/2;
   OLED.clearDisplay();
-   OLED.setCursor(0,0);
-   if(menu_active==0)OLED.drawBitmap(10, y, icon_home, 24,24, 1);
-   else if(menu_active==1)OLED.drawBitmap(10, y, icon_gesture, 24,24, 1);
-   else if(menu_active==2)OLED.drawBitmap(10, y, icon_profile, 24,24, 1);
-   else if(menu_active==3)OLED.drawBitmap(10, y, icon_info, 24,24, 1);
-   text_center_offset(34,y+10,menu_title[menu_active]);
+//   OLED.setCursor(0,0);
+//   if(menu_active==0)OLED.drawBitmap(10, y, icon_home, 24,24, 1);
+//   else if(menu_active==1)OLED.drawBitmap(10, y, icon_gesture, 24,24, 1);
+//   else if(menu_active==2)OLED.drawBitmap(10, y, icon_profile, 24,24, 1);
+//   else if(menu_active==3)OLED.drawBitmap(10, y, icon_info, 24,24, 1);
+   text_center(y+10,menu_title[menu_active]);
 }
 
 void screen_connect(){

@@ -14,10 +14,10 @@ void read_sensor(){
       if(AcX != 0 || AcY != 0 || AcZ != 0){ 
         AcX=AcX/sensor_range;
         AcY=AcY/sensor_range;
-        AcZ=AcZ/sensor_range;
+        AcZ=-AcZ/sensor_range;
         GyX=GyX/sensor_range;
-        GyY=GyY/sensor_range;
-        GyZ=GyZ/sensor_range;
+        GyY=-GyY/sensor_range;
+        GyZ=-GyZ/sensor_range;
       }
     }
 }

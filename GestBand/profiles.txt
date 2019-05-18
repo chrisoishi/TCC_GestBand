@@ -1,6 +1,6 @@
-oi
-[true, false, true, false]
-[DIGIT4, , K, ]
-wetewt
-[false]
-[DIGIT4]
+endo build
+[true, true, true, true, true]
+[A, B, C, D, E]
+chris
+[true, true, true, true, true, true, true, true]
+[SPACE, Q, , , , E, F, E]

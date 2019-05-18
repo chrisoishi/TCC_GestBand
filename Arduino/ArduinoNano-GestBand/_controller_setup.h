@@ -6,10 +6,9 @@ void setup_controller(){
   //pinMode(greenPin,OUTPUT);
   //pinMode(bluePin,OUTPUT);
   pinMode(btStatePin,INPUT);
-  digitalWrite(btStatePin,LOW);
+  //digitalWrite(btStatePin,HIGH);
   //screen_logo(0);
-  OLED.setCursor(0,0);
-  OLED.print("dsgsgsd");
+  text_center(12,"GestBand");
   OLED.display();
   delay(1000);
   //setup_wifi();

@@ -53,6 +53,11 @@ public class MainController implements Initializable {
 
     public boolean IS_CREATING_PROFILE = false;
 
+    public interface Actions {
+
+        public void run();
+    }
+
     private void show_pulseira() {
         drawer.clear();
         title.setText("Pulseira");
@@ -60,7 +65,7 @@ public class MainController implements Initializable {
             TextField ip = new TextField();
             ip.setText(Settings.get("last_ip"));
             Button b;
-            if (ConnectionController.CONNECTING) {
+            if (ConnectionController.CONNECTING && ConnectionController.BLUETOOTH_STATUS == 0) {
                 b = new Button("Cancelar");
                 b.setOnAction(event -> {
                     ConnectionController.CONNECTING = false;
@@ -69,7 +74,7 @@ public class MainController implements Initializable {
                     set_status();
                 });
             } else {
-                b = new Button("Conectar");
+                b = new Button("Conectar via Wifi");
                 b.setOnAction(event -> {
                     try_connect(ip.getText());
                     show_pulseira();
@@ -77,10 +82,20 @@ public class MainController implements Initializable {
             }
             b.setPrefWidth(400);
             drawer.header("Conectar com a pulseira", 2, true);
+            drawer.text("Escolha umas das forma de conexão", 2, true);
+            drawer.header("Wifi", 2, true);
             drawer.println(new Label("IP GestBand"), 1);
             drawer.println(ip, 1);
             drawer.println(new Label("*Verifique na sua pulseira o ip"), 2);
-            drawer.println(b, 1);
+            drawer.println(b, 2);
+            drawer.header("Bluetooth", 2, true);
+            b = new Button("Conectar via Bluetooth");
+            b.setPrefWidth(400);
+            b.setOnAction(event -> {
+                try_connect_bluetooth();
+                show_pulseira();
+            });
+            drawer.println(b, 2);
         } else {
             Button b;
             drawer.header("Geral", 2, true);
@@ -109,8 +124,8 @@ public class MainController implements Initializable {
     }
 
     private void show_graph() {
-        ClientInSocket.send("send;|");
-        Main.show_graph("Criar gesto",false);
+        ConnectionController.send("send;|");
+        Main.show_graph("Criar gesto", false);
     }
 
     private void show_gestos() {
@@ -138,7 +153,7 @@ public class MainController implements Initializable {
             b.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    Main.show_graph(g.name,true);
+                    Main.show_graph(g.name, true);
                     Main.Graph.setGesture(GestureController.gestos.get(a));
                 }
             });
@@ -231,7 +246,9 @@ public class MainController implements Initializable {
                 final Gestures g = GestureController.gestos.get(i);
                 final CheckBox cb = new CheckBox();
                 if (p != null) {
-                    if(i<p.gestos.size())cb.setSelected(p.gestos.get(i));
+                    if (i < p.gestos.size()) {
+                        cb.setSelected(p.gestos.get(i));
+                    }
                 }
                 cb.setOnAction(value -> {
                     g.is_check = cb.selectedProperty().get();
@@ -333,29 +350,38 @@ public class MainController implements Initializable {
         drawer.clear();
         title.setText("Configurações");
         if (ConnectionController.CONNECTION) {
-            ClientInSocket.send("send_wifi;|");
             Button b;
-            drawer.header("Wifi", 2, true);
-            drawer.print(new Label("SSID"), 1);
-            drawer.println(ssid, 1);
-            drawer.print(new Label("Senha"), 1);
-            drawer.println(pass, 1);
+            if (!ConnectionController.IS_BLUETOOTH) {
 
-            b = new Button("Reniciar");
+                ClientInSocket.send("send_wifi;|");
+
+                drawer.header("Wifi", 2, true);
+                drawer.print(new Label("SSID"), 1);
+                drawer.println(ssid, 1);
+                drawer.print(new Label("Senha"), 1);
+                drawer.println(pass, 1);
+
+                b = new Button("Reniciar");
+                b.setOnAction(event -> {
+                    ConnectionController.restart();
+                    set_status();
+                    show_pulseira();
+                });
+                b.setPrefWidth(250);
+                drawer.print(b, 1);
+
+                b = new Button("Salvar");
+                b.setOnAction(event -> {
+                    send_wifi_settings(ssid.getText(), pass.getText());
+                });
+                b.setPrefWidth(250);
+                drawer.println(b, 1);
+            }
+            drawer.header("Testes", 2, true);
+            b = new Button("Velocidade de transmissão");
             b.setOnAction(event -> {
-                ConnectionController.restart();
-                set_status();
-                show_pulseira();
             });
-            b.setPrefWidth(250);
             drawer.print(b, 1);
-
-            b = new Button("Salvar");
-            b.setOnAction(event -> {
-                send_wifi_settings(ssid.getText(), pass.getText());
-            });
-            b.setPrefWidth(250);
-            drawer.println(b, 1);
 
         } else {
             drawer.print(new Label("Conecte-se com sua pulseira para poder realizar as configurações"), 1);
@@ -378,8 +404,18 @@ public class MainController implements Initializable {
     }
 
     public void set_status() {
-        if (ConnectionController.CONNECTING) {
-            set_status("Conectando...", C_YELLOW);
+        if (ConnectionController.BLUETOOTH_STATUS == 4) {
+            set_status("Não foi possível encontrar a pulseira, acesse suas configurações de bluetooth", C_RED);
+        } else if (ConnectionController.CONNECTING) {
+            if (ConnectionController.BLUETOOTH_STATUS == 1) {
+                set_status("Procurando pela pulsera...", C_YELLOW);
+            } else if (ConnectionController.BLUETOOTH_STATUS == 2) {
+                set_status("Pulseira encontrada, tentando conectar...", C_YELLOW);
+            } else if (ConnectionController.BLUETOOTH_STATUS == 5) {
+                set_status("Conectando via bluetooth..", C_YELLOW);
+            } else {
+                set_status("Conectando via wifi...", C_YELLOW);
+            }
         } else if (!ConnectionController.CONNECTION) {
             set_status("GestBand Desconectada", C_RED);
 
@@ -416,12 +452,31 @@ public class MainController implements Initializable {
                     } else {
                         set_status("Não foi possível se conectar. Verifique a conexão ou o IP", MainController.C_RED);
                     }
-                    
+
                 }
 
             };
             ConnectionController.thread = new Thread(t);
             ConnectionController.thread.start();
+        }
+    }
+
+    public void try_connect_bluetooth() {
+        if (!ConnectionController.CONNECTING) {
+
+            ConnectionController.CONNECTING = true;
+
+            Actions acts = new Actions() {
+                public void run() {
+                    if (ConnectionController.BLUETOOTH_STATUS == 3) {
+                        show_pulseira();
+                    }
+                    set_status();
+                }
+            };
+
+            ConnectionController.connect_to_gestband_bluetooth(task(acts));
+            //set_status();
         }
     }
 
@@ -459,13 +514,13 @@ public class MainController implements Initializable {
 
     private void set_activation() {
         if (DTWController.ACTIVE) {
-            ClientInSocket.send("send;|");
+            ConnectionController.protocol.startDataSend();
 
             activation.setText("Parar reconhecimento");
             activation.setStyle("-fx-background-color:" + C_RED);
 
         } else {
-            ClientInSocket.send("stop;|");
+            ConnectionController.protocol.stopDataSend();
             activation.setText("Iniciar reconhecimento");
             activation.setStyle("-fx-background-color:" + C_BLUE);
         }
@@ -490,8 +545,28 @@ public class MainController implements Initializable {
         });
 
         if (Settings.get("last_ip") != "undefined") {
-            try_connect(Settings.get("last_ip"));
+            //try_connect(Settings.get("last_ip"));
         }
     }
 
+    public Actions task(Actions acts) {
+        return new Actions() {
+            public void run() {
+                Task t = new Task() {
+                    @Override
+                    protected Object call() throws Exception {
+                        return true;
+                    }
+
+                    @Override
+                    protected void succeeded() {
+                        acts.run();
+                    }
+
+                };
+                new Thread(t).start();
+            }
+        };
+
+    }
 }

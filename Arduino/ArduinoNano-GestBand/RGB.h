@@ -1,7 +1,7 @@
-int r_set,g_set,b_set;
-int r_aux,g_aux,b_aux;
-int r_dir,g_dir,b_dir;
-int fade_speed = 1;
+int8_t r_set,g_set,b_set;
+int8_t r_aux,g_aux,b_aux;
+int8_t r_dir,g_dir,b_dir;
+int8_t fade_speed = 1;
 
 void rgb_set_color(int r,int g,int b){
     r_set = r;

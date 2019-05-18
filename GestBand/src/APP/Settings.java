@@ -34,7 +34,7 @@ public class Settings {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             while ((st = reader.readLine()) != null) {
                 attr = st.split("=", 2);
-                data.put(attr[0], attr[1]);
+                data.put(attr[0], attr[1].replace("\n", ""));
             }
             reader.close();
         } catch (FileNotFoundException ex) {
@@ -51,7 +51,7 @@ public class Settings {
             fw = new FileWriter(file);
             BufferedWriter writer = new BufferedWriter(fw);
             for (String key : data.keySet()) {
-                writer.append(key + "=" + data.get(key));
+                writer.append(key + "=" + data.get(key)+"\n");
             }
             writer.close();
         } catch (IOException ex) {
