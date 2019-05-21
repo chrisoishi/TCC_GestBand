@@ -44,12 +44,10 @@ public class Main extends Application {
         //scene.getStylesheets().add("/javafxapplication8/Style.css");
         stage.setScene(scene);
         stage.setOnCloseRequest(WindowEvent -> {
-            try {
+            
                 Settings.save();
-                ClientInSocket.stop();
-            } catch (IOException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
+                ConnectionController.disconnect();
+
         });
         stage.show();
         controller = loader.getController();
@@ -64,7 +62,7 @@ public class Main extends Application {
     public static void show_graph(String title,boolean isView) {
         FXMLLoader loader = new FXMLLoader(w_graph);
         Main.Graph = new Graph();
-
+        
         Scene scene;
         try {
             scene = new Scene(loader.load());
@@ -73,7 +71,7 @@ public class Main extends Application {
             stage.setOnCloseRequest(WindowEvent
                     -> {
                 if (ConnectionController.CONNECTION) {
-                    //ClientInSocket.send("stop;|");
+                    ConnectionController.protocol.stopDataSend();
                 }
 
             });

@@ -9,6 +9,7 @@ import Controllers.GestureController;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -17,6 +18,7 @@ import java.util.List;
 public class Profiles {
 
     public String name;
+    public Map<String, ProfileData> data = new HashMap<String, ProfileData>();
     public List<Boolean> gestos = new ArrayList<>();
     public List<String> comandos = new ArrayList<>();
 
@@ -34,9 +36,43 @@ public class Profiles {
             comandos.add(g.default_action);
         }
     }
-    
-    public void clear(){
+
+    public void clear() {
+        data.clear();
         gestos.clear();
         comandos.clear();
+    }
+
+    public void set(String id, String action, boolean active) {
+        if (!data.containsKey(id)) {
+            data.put(id, new ProfileData(action,active));
+        } else {
+            ProfileData pd= data.get(id);
+            if(action==null)action = pd.action;
+            data.replace(id, new ProfileData(action,active));
+        }
+    }
+    public void remove(String id){
+        data.remove(id);
+    }
+    
+    public List<String> listString(){
+        List<String> s = new ArrayList<>();
+        for(String key : data.keySet()){
+            s.add(key+":"+data.get(key).toString());
+        }
+        return s;
+    }
+
+    public class ProfileData {
+        public String action;
+        public boolean active;
+        public ProfileData(String action,boolean active){
+            this.action = action;
+            this.active = active;
+        }
+        public String toString(){
+            return action+";"+Boolean.toString(active);
+        };
     }
 }

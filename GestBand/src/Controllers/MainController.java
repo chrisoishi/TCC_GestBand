@@ -19,7 +19,9 @@ import javafx.scene.layout.GridPane;
 
 import APP.Main;
 import APP.Profiles;
+import APP.Profiles.ProfileData;
 import APP.Settings;
+import java.util.Set;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -124,7 +126,7 @@ public class MainController implements Initializable {
     }
 
     private void show_graph() {
-        ConnectionController.send("send;|");
+        ConnectionController.protocol.startDataSend();
         Main.show_graph("Criar gesto", false);
     }
 
@@ -139,13 +141,6 @@ public class MainController implements Initializable {
         for (int i = 0; i < GestureController.gestos.size(); i++) {
             int a = i;
             final Gestures g = GestureController.gestos.get(i);
-            final CheckBox cb = new CheckBox();
-            if (p != null) {
-                cb.setSelected(p.gestos.get(i));
-            }
-            cb.setOnAction(value -> {
-                g.is_check = cb.selectedProperty().get();
-            });
             b = new Button();
             final TextField tf = new TextField();
             b.setPrefWidth(200);
@@ -227,6 +222,7 @@ public class MainController implements Initializable {
         b.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                ProfileController.current = new Profiles("");
                 ProfileController.set = -1;
                 IS_CREATING_PROFILE = true;
                 show_profiles();
@@ -239,22 +235,39 @@ public class MainController implements Initializable {
             profiles.getSelectionModel().select(ProfileController.set);
 
             drawer.text("Nome do perfil", 1, false);
-            drawer.println(tf_profilename, 1);
+            ComboBox gestos = new ComboBox();
+            gestos.setOnAction(value -> {
+                ProfileController.current.set(GestureController.gestos.get(gestos.getSelectionModel().getSelectedIndex()).id, "", false);
+                show_profiles();
+            });
 
             for (int i = 0; i < GestureController.gestos.size(); i++) {
-                int a = i;
-                final Gestures g = GestureController.gestos.get(i);
+                gestos.getItems().add(GestureController.gestos.get(i).name);
+            }
+            tf_profilename.textProperty().set(ProfileController.current.name);
+            tf_profilename.setOnKeyReleased(key_event -> {
+                ProfileController.current.name = tf_profilename.textProperty().get();
+            });
+            drawer.println(tf_profilename, 1);
+            drawer.text("Adicionar gesto", 1, false);
+            drawer.println(gestos, 2);
+
+            Set<String> chaves = ProfileController.current.data.keySet();
+            for (String id : chaves) {
+                final String ids = id;
+                final ProfileData pd = ProfileController.current.data.get(id);
+                final Gestures g = GestureController.getById(id);
                 final CheckBox cb = new CheckBox();
-                if (p != null) {
-                    if (i < p.gestos.size()) {
-                        cb.setSelected(p.gestos.get(i));
-                    }
-                }
+                cb.selectedProperty().set(pd.active);
+                final TextField tf = new TextField();
+                tf.textProperty().set(pd.action);
+
                 cb.setOnAction(value -> {
                     g.is_check = cb.selectedProperty().get();
+                    ProfileController.current.set(ids, null, g.is_check);
                 });
                 b = new Button();
-                final TextField tf = new TextField();
+
                 drawer.text(g.name, 1, false);
 
                 b = new Button();
@@ -263,20 +276,30 @@ public class MainController implements Initializable {
                 tf.setOnKeyPressed(key_event -> {
                     tf.setText(key_event.getCode().name());
                     g.default_action = key_event.getCode().name();
-                    //GestureController.saveGesture();
+                    //GestureController.saveGesture();key_event.getCode().name();
                     cb.selectedProperty().set(true);
                     g.is_check = cb.selectedProperty().get();
+
                 });
                 tf.setOnKeyReleased(key_event -> {
                     tf.setText(key_event.getCode().name());
-
+                    ProfileController.current.set(ids, key_event.getCode().name(), true);
                 });
                 if (ProfileController.set == -1) {
                     g.default_action = "";
                 }
-                tf.setText(g.default_action);
+                //tf.setText(g.default_action);
                 drawer.print(tf, 1);
-                drawer.println(cb, 1);
+                drawer.print(cb, 1);
+                b = new Button("Remover");
+                b.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        ProfileController.current.remove(ids);
+                        show_profiles();
+                    }
+                });
+                drawer.println(b, 1);
 
             }
             Drawer drawer2 = new Drawer();
@@ -309,20 +332,18 @@ public class MainController implements Initializable {
 
                 drawer2.print(b, 1);
             }
-
-            b = new Button();
+            b  = new Button();
             b.setPrefWidth(200);
-
             b.setText("Salvar");
             b.setStyle("-fx-background-color:" + MainController.C_GREEN);
             b.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
                     if (tf_profilename.getText() != "") {
-                        if (p == null) {
-                            ProfileController.perfis.add(new Profiles(tf_profilename.getText()));
+                        if (IS_CREATING_PROFILE) {
+                            ProfileController.add();
                         } else {
-                            p.save(tf_profilename.getText());
+                            ProfileController.update();
                         }
                         ProfileController.saveProfile();
                         GestureController.clearCheck();
@@ -343,6 +364,7 @@ public class MainController implements Initializable {
             });
 
             drawer2.println(b, 2);
+
         }
     }
 

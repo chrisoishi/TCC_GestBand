@@ -54,7 +54,7 @@ public class DTWController {
                 moving(buff);
                 execute();
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println("erros nos dados....");
         }
 
@@ -70,7 +70,7 @@ public class DTWController {
                 buff_position += 1;
                 if (buff_position == 70) {
                     GB_INITIAL = true;
-                   // System.out.println("inicio");
+                    // System.out.println("inicio");
                 }
             }
         } else if (GB_INITIAL) {
@@ -156,15 +156,15 @@ public class DTWController {
     }
 
     public static void validate() {
-        int m, min, certo;
+        int m, min;
+        String certo;
         float[][] d;
         Gestures g;
         min = 70;
-        certo = 0;
-        for (int i = 0; i < GestureController.gestos_current.size(); i++) {
+        certo = "";
+        for (String id : ProfileController.current.data.keySet()) {
             m = 0;
-
-            g = GestureController.gestos_current.get(i);
+            g = GestureController.getById(id);
             d = get_data(g.size);
             m += lDTW.compute(g.acX, d[0]).getDistance();
             m += lDTW.compute(g.acY, d[1]).getDistance();
@@ -174,7 +174,7 @@ public class DTWController {
             m += lDTW.compute(g.gZ, d[5]).getDistance();
             m = m / 6;
             if (m < min) {
-                certo = i;
+                certo = id;
                 min = m;
 
             } else {
@@ -182,7 +182,7 @@ public class DTWController {
             }
         }
         if (min < 70) {
-            g = GestureController.gestos_current.get(certo);
+            g = GestureController.getById(certo);
             System.out.println("Gesto:" + g.name);
             clear();
             if (!g.default_action.equals("")) {

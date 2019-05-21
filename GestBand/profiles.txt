@@ -1,6 +1,14 @@
-endo build
-[true, true, true, true, true]
-[A, B, C, D, E]
-chris
-[true, true, true, true, true, true, true, true]
-[SPACE, Q, , , , E, F, E]
+name:teste
+1:A;true
+2:B;true
+--end
+name:teee
+1:E;true
+--end
+name:nano
+11:A;true
+12:B;true
+13:C;true
+9:D;true
+10:E;true
+--end

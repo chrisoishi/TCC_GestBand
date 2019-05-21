@@ -6,6 +6,7 @@
 package APP;
 
 import java.io.Serializable;
+import java.util.Random;
 import javafx.scene.input.KeyCode;
 
 /**
@@ -13,7 +14,7 @@ import javafx.scene.input.KeyCode;
  * @author chris
  */
 public class Gestures {
-
+    public String id;
     public String name;
     public int size;
     public String default_action;
@@ -35,6 +36,7 @@ public class Gestures {
         this.gX  = gX;
         this.gY  = gY;
         this.gZ  = gZ;
+        this.id = newId();
     }
         public Gestures(String name,float[][] data){
         this.name= name;
@@ -44,6 +46,7 @@ public class Gestures {
         this.gX  = data[3];
         this.gY  = data[4];
         this.gZ  = data[5];
+        this.id = newId();
     }
 
     public Gestures() {
@@ -51,10 +54,8 @@ public class Gestures {
 
     public String toString() {
         String s = "";
-        s += name;
-        if(!default_action.equals("")){
-            s+=";"+default_action;
-        }
+        if(id.isEmpty())id=newId();
+        s += name+";"+id;
         s+="\r\n";
         for (int i = 0; i < size; i++) {
             s += Float.toString(acX[i]) + ";";
@@ -81,5 +82,9 @@ public class Gestures {
         }
         s+="\r\n";
         return s;
+    }
+    public String newId(){
+        Random r = new Random();
+        return Integer.toString(r.nextInt((9999999 - 1000000) + 1) + 1000000);
     }
 }

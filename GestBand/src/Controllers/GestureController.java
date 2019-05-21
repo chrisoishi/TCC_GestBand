@@ -15,6 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.ObservableList;
@@ -53,7 +54,7 @@ public class GestureController {
         String st, s2[];
         s2 = new String[1];
         String name = "";
-        String action = "";
+        String id = "";
         Gestures g;
         float[][] temp = new float[6][200];
         int count = 0;
@@ -62,10 +63,10 @@ public class GestureController {
             if (count == 0) {
                 temp = new float[6][200];
                 s2 = st.split(";");
-                action = "";
+                id = "";
                 if (s2.length > 1) {
                     name = s2[0];
-                    action = s2[1];
+                    id = s2[1];
                 } else {
                     name = st;
                 }
@@ -80,7 +81,7 @@ public class GestureController {
             if (count == 6) {
                 count = 0;
                 g = new Gestures(name, s2.length, temp[0], temp[1], temp[2], temp[3], temp[4], temp[5]);
-                g.default_action = action;
+                g.id = id;
                 gestos.add(g);
 
             } else {
@@ -95,5 +96,12 @@ public class GestureController {
             final Gestures g = gestos.get(i);
             g.is_check = false;
         }
+    }
+
+    public static Gestures getById(String id) {
+        for(Gestures g : gestos){
+            if(g.id.equals(id))return g;
+        }
+        return null;
     }
 }

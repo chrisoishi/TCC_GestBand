@@ -183,7 +183,7 @@ public class ConnectionController {
                     AMOSTRAS++;
                     System.out.println(MEDIA_LATENCY/10);
                     //System.out.println("########### LATENCIA MEDIA DATA:" + MEDIA_LATENCY / 10 + " ms");
-                    if(AMOSTRAS==100)System.out.println("DEU 100 AMOSTRAS");
+                    //if(AMOSTRAS==100)System.out.println("DEU 100 AMOSTRAS");
                     MEDIA_LATENCY = 0;
                     MEDIA_LATENCY_I = 0;
                 } else {
