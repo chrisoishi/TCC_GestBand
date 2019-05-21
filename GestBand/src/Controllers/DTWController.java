@@ -191,6 +191,17 @@ public class DTWController {
         }
     }
 
+    public static int compare(Gestures g1, Gestures g2) {
+        int m = 0;
+        m += lDTW.compute(g1.acX, g2.acX).getDistance();
+        m += lDTW.compute(g1.acY, g2.acY).getDistance();
+        m += lDTW.compute(g1.acZ, g2.acZ).getDistance();
+        m += lDTW.compute(g1.gX, g2.gX).getDistance();
+        m += lDTW.compute(g1.gY, g2.gY).getDistance();
+        m += lDTW.compute(g1.gZ, g2.gZ).getDistance();
+        return m / 6;
+    }
+
     public static void clear() {
         i_current = 0;
         for (int i = 0; i < MAX_SIZE; i++) {

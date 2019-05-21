@@ -21,7 +21,11 @@ import APP.Main;
 import APP.Profiles;
 import APP.Profiles.ProfileData;
 import APP.Settings;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -54,6 +58,9 @@ public class MainController implements Initializable {
     public static final String C_BLUE = "#1e88e5";
 
     public boolean IS_CREATING_PROFILE = false;
+
+    private List<String> keyPressed = new ArrayList<String>();
+    private String keyLast = "";
 
     public interface Actions {
 
@@ -272,18 +279,34 @@ public class MainController implements Initializable {
 
                 b = new Button();
                 b.setPrefWidth(200);
-
                 tf.setOnKeyPressed(key_event -> {
-                    tf.setText(key_event.getCode().name());
-                    g.default_action = key_event.getCode().name();
-                    //GestureController.saveGesture();key_event.getCode().name();
-                    cb.selectedProperty().set(true);
-                    g.is_check = cb.selectedProperty().get();
+                    boolean exists = false;
+                    for (String key : keyPressed) {
+                        if (key.equals(key_event.getCode().name())) {
+                            exists = true;
+                            break;
+                        }
+                    }
 
+                    if (!exists) {
+                        keyPressed.add(key_event.getCode().name());
+                    }
+                    String all = "";
+                    for (String key : keyPressed) {
+                        if (!all.isEmpty()) {
+                            all += " + ";
+                        }
+                        all += key;
+                    }
+                    tf.setText(all);
+                    keyLast = all;
                 });
                 tf.setOnKeyReleased(key_event -> {
-                    tf.setText(key_event.getCode().name());
-                    ProfileController.current.set(ids, key_event.getCode().name(), true);
+                   
+                    keyPressed.removeIf(s -> (s.equals(key_event.getCode().name())));
+                    tf.setText(keyLast);
+                    cb.selectedProperty().set(true);
+                    ProfileController.current.set(ids, keyLast, true);
                 });
                 if (ProfileController.set == -1) {
                     g.default_action = "";
@@ -332,7 +355,7 @@ public class MainController implements Initializable {
 
                 drawer2.print(b, 1);
             }
-            b  = new Button();
+            b = new Button();
             b.setPrefWidth(200);
             b.setText("Salvar");
             b.setStyle("-fx-background-color:" + MainController.C_GREEN);

@@ -67,8 +67,8 @@ public class Graph {
     boolean test = false;
     boolean clear = false;
 
-    private DTW lDTW = new DTW();
-    private boolean test_dtw = false;
+    private Gestures gestureValidate;
+    private int mediaValidation;
 
     TextField txtName = new TextField();
     TextField textField2 = new TextField();
@@ -96,7 +96,7 @@ public class Graph {
 
             @Override
             public void handle(ActionEvent event) {
-
+                mediaValidation = 100;
                 clear();
                 stop = true;
                 instruction.setText("Posicione seu braço na posição inicial...");
@@ -128,9 +128,57 @@ public class Graph {
                             @Override
                             protected void succeeded() {
                                 stop = true;
-                                instruction.setText("Muito bem seu gesto foi gravado");
+
                                 txtBegin.setText("0");
                                 txtEnd.setText(Integer.toString(series1.getData().size() - 1));
+                                while (mediaValidation > 70) {
+                                    instruction.setText("Posicione seu braço novamente na posição inicial");
+                                    gestureValidate = getGesture();
+                                    Task t = new Task() {
+                                        @Override
+                                        protected Object call() throws Exception, InterruptedException {
+                                            while (!DTWController.GB_INITIAL) {
+                                                sleep(100);
+                                            }
+                                            return true;
+                                        }
+
+                                        @Override
+                                        protected void succeeded() {
+                                            stop = false;
+                                            instruction.setText("Repita seu gesto");
+                                            Task t = new Task() {
+                                                @Override
+                                                protected Object call() throws Exception, InterruptedException {
+                                                    while (!DTWController.GB_MOVE) {
+                                                        sleep(100);
+                                                    }
+                                                    while (DTWController.GB_MOVE) {
+                                                        sleep(100);
+                                                    }
+                                                    return true;
+                                                }
+
+                                                @Override
+                                                protected void succeeded() {
+                                                    stop = true;
+
+                                                    mediaValidation = DTWController.compare(gestureValidate, getGesture());
+                                                    if (mediaValidation > 70) {
+                                                        instruction.setText("Erro: " + Integer.toString(mediaValidation) + " - Máximo: 70");
+                                                    }
+                                                    try {
+                                                        sleep(3000);
+                                                    } catch (InterruptedException ex) {
+                                                        Logger.getLogger(Graph.class.getName()).log(Level.SEVERE, null, ex);
+                                                    }
+                                                }
+                                            };
+                                            new Thread(t).start();
+                                        }
+                                    };
+                                    new Thread(t).start();
+                                }
                             }
                         };
                         new Thread(t).start();
@@ -242,15 +290,16 @@ public class Graph {
             btnSave.setPrefWidth(300);
             new_gesture_pane.add(btnSave, 5, 3, 2, 1);
             scene = new Scene(root, 1000, 700);
+        } else {
+            scene = new Scene(root, 1000, 300);
         }
-        else scene = new Scene(root, 1000, 300);
         //root.getChildren().addAll(btnStop, btnSave, btnClear, btnTest, btnRead, textField, txtBegin, txtEnd);
-        
+
         primaryStage.setScene(scene);
 
     }
 
-    public void start(Stage stage, String title,boolean isView) throws IOException {
+    public void start(Stage stage, String title, boolean isView) throws IOException {
 
         stage.setTitle(title);
         init(stage, isView);
@@ -353,19 +402,8 @@ public class Graph {
 
     private void saveGesture() throws IOException {
         if (!txtName.getText().equals("")) {
-            int end = Integer.parseInt(txtEnd.getText());
-            int begin = Integer.parseInt(txtBegin.getText());
-            int size = end - begin;
-            float[][] s = new float[6][size];
-            for (int i = begin; i < end; i++) {
-                s[0][i - begin] = series1.getData().get(i).getYValue().floatValue();
-                s[1][i - begin] = series2.getData().get(i).getYValue().floatValue();
-                s[2][i - begin] = series3.getData().get(i).getYValue().floatValue();
-                s[3][i - begin] = series4.getData().get(i).getYValue().floatValue();
-                s[4][i - begin] = series5.getData().get(i).getYValue().floatValue();
-                s[5][i - begin] = series6.getData().get(i).getYValue().floatValue();
-            }
-            Gestures g = new Gestures(txtName.getText(), size, s[0], s[1], s[2], s[3], s[4], s[5]);
+            Gestures g = getGesture();
+            g.name = txtName.getText();
             GestureController.gestos.add(g);
             GestureController.saveGesture();
             instruction.setText("Seu gesto foi salvo!!!");
@@ -374,6 +412,22 @@ public class Graph {
         } else {
             instruction.setText("Digite um nome para seu novo gesto!");
         }
+    }
+
+    private Gestures getGesture() {
+        int end = Integer.parseInt(txtEnd.getText());
+        int begin = Integer.parseInt(txtBegin.getText());
+        int size = end - begin;
+        float[][] s = new float[6][size];
+        for (int i = begin; i < end; i++) {
+            s[0][i - begin] = series1.getData().get(i).getYValue().floatValue();
+            s[1][i - begin] = series2.getData().get(i).getYValue().floatValue();
+            s[2][i - begin] = series3.getData().get(i).getYValue().floatValue();
+            s[3][i - begin] = series4.getData().get(i).getYValue().floatValue();
+            s[4][i - begin] = series5.getData().get(i).getYValue().floatValue();
+            s[5][i - begin] = series6.getData().get(i).getYValue().floatValue();
+        }
+        return new Gestures("", size, s[0], s[1], s[2], s[3], s[4], s[5]);
     }
 
     public void setGesture(Gestures g) {
@@ -413,37 +467,6 @@ public class Graph {
             }
         }
         return s;
-    }
-
-    private void testDTW() {
-        if (test) {
-
-            int size;
-            int m;
-            float[][] s;
-            for (int i = 0; i < GestureController.gestos.size(); i++) {
-                if (series1.getData().size() + 1 > GestureController.gestos.get(i).size) {
-                    s = getData(GestureController.gestos.get(i).size);
-                    m = 0;
-                    m += lDTW.compute(GestureController.gestos.get(i).acX, s[0]).getDistance();
-                    m += lDTW.compute(GestureController.gestos.get(i).acY, s[1]).getDistance();
-                    m += lDTW.compute(GestureController.gestos.get(i).acZ, s[2]).getDistance();
-                    m += lDTW.compute(GestureController.gestos.get(i).gX, s[3]).getDistance();
-                    m += lDTW.compute(GestureController.gestos.get(i).gY, s[4]).getDistance();
-                    m += lDTW.compute(GestureController.gestos.get(i).gZ, s[5]).getDistance();
-                    m = m / 6;
-                    if (m < 20) {
-                        System.out.println("Gesto:" + GestureController.gestos.get(i).name);
-
-                        clear();
-
-                        Simulation.pressKey(GestureController.gestos.get(i).default_action);
-                    }
-                    //System.out.println(m);
-                }
-
-            }
-        }
     }
 
     private void clear() {

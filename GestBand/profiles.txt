@@ -1,9 +1,10 @@
 name:teste
-1:A;true
+1:SHIFT + D;true
 2:B;true
+3:SHIFT + N;true
 --end
 name:teee
-1:E;true
+1:SHIFT;true
 --end
 name:nano
 11:A;true
