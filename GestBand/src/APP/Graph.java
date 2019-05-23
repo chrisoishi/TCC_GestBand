@@ -76,6 +76,11 @@ public class Graph {
     TextField txtBegin = new TextField();
     TextField txtEnd = new TextField();
 
+    public interface Actions {
+
+        public void run();
+    }
+
     private void init(Stage primaryStage, boolean isView) {
 
         xAxis = new NumberAxis(0, MAX_DATA_POINTS, MAX_DATA_POINTS / 10);
@@ -99,92 +104,8 @@ public class Graph {
                 mediaValidation = 100;
                 clear();
                 stop = true;
-                instruction.setText("Posicione seu braço na posição inicial...");
-                Task t = new Task() {
-                    @Override
-                    protected Object call() throws Exception, InterruptedException {
-                        while (!DTWController.GB_INITIAL) {
-                            sleep(100);
-                        }
-                        return true;
-                    }
+                new Tasks().start();
 
-                    @Override
-                    protected void succeeded() {
-                        stop = false;
-                        instruction.setText("Agora faça seu gesto...");
-                        Task t = new Task() {
-                            @Override
-                            protected Object call() throws Exception, InterruptedException {
-                                while (!DTWController.GB_MOVE) {
-                                    sleep(100);
-                                }
-                                while (DTWController.GB_MOVE) {
-                                    sleep(100);
-                                }
-                                return true;
-                            }
-
-                            @Override
-                            protected void succeeded() {
-                                stop = true;
-
-                                txtBegin.setText("0");
-                                txtEnd.setText(Integer.toString(series1.getData().size() - 1));
-                                while (mediaValidation > 70) {
-                                    instruction.setText("Posicione seu braço novamente na posição inicial");
-                                    gestureValidate = getGesture();
-                                    Task t = new Task() {
-                                        @Override
-                                        protected Object call() throws Exception, InterruptedException {
-                                            while (!DTWController.GB_INITIAL) {
-                                                sleep(100);
-                                            }
-                                            return true;
-                                        }
-
-                                        @Override
-                                        protected void succeeded() {
-                                            stop = false;
-                                            instruction.setText("Repita seu gesto");
-                                            Task t = new Task() {
-                                                @Override
-                                                protected Object call() throws Exception, InterruptedException {
-                                                    while (!DTWController.GB_MOVE) {
-                                                        sleep(100);
-                                                    }
-                                                    while (DTWController.GB_MOVE) {
-                                                        sleep(100);
-                                                    }
-                                                    return true;
-                                                }
-
-                                                @Override
-                                                protected void succeeded() {
-                                                    stop = true;
-
-                                                    mediaValidation = DTWController.compare(gestureValidate, getGesture());
-                                                    if (mediaValidation > 70) {
-                                                        instruction.setText("Erro: " + Integer.toString(mediaValidation) + " - Máximo: 70");
-                                                    }
-                                                    try {
-                                                        sleep(3000);
-                                                    } catch (InterruptedException ex) {
-                                                        Logger.getLogger(Graph.class.getName()).log(Level.SEVERE, null, ex);
-                                                    }
-                                                }
-                                            };
-                                            new Thread(t).start();
-                                        }
-                                    };
-                                    new Thread(t).start();
-                                }
-                            }
-                        };
-                        new Thread(t).start();
-                    }
-                };
-                new Thread(t).start();
             }
         });
 
@@ -420,12 +341,21 @@ public class Graph {
         int size = end - begin;
         float[][] s = new float[6][size];
         for (int i = begin; i < end; i++) {
-            s[0][i - begin] = series1.getData().get(i).getYValue().floatValue();
-            s[1][i - begin] = series2.getData().get(i).getYValue().floatValue();
-            s[2][i - begin] = series3.getData().get(i).getYValue().floatValue();
-            s[3][i - begin] = series4.getData().get(i).getYValue().floatValue();
-            s[4][i - begin] = series5.getData().get(i).getYValue().floatValue();
-            s[5][i - begin] = series6.getData().get(i).getYValue().floatValue();
+            try {
+                s[0][i - begin] = series1.getData().get(i).getYValue().floatValue();
+                s[1][i - begin] = series2.getData().get(i).getYValue().floatValue();
+                s[2][i - begin] = series3.getData().get(i).getYValue().floatValue();
+                s[3][i - begin] = series4.getData().get(i).getYValue().floatValue();
+                s[4][i - begin] = series5.getData().get(i).getYValue().floatValue();
+                s[5][i - begin] = series6.getData().get(i).getYValue().floatValue();
+            } catch (Exception e) {
+                s[0][i - begin] = 0;
+                s[1][i - begin] = 0;
+                s[2][i - begin] = 0;
+                s[3][i - begin] = 0;
+                s[4][i - begin] = 0;
+                s[5][i - begin] = 0;
+            }
         }
         return new Gestures("", size, s[0], s[1], s[2], s[3], s[4], s[5]);
     }
@@ -480,4 +410,125 @@ public class Graph {
         l.getStyleClass().add("header");
         return l;
     }
+
+    private class Tasks {
+
+        public void waitingInitial(String text, Actions act) {
+            instruction.setText(text);
+            Task t = new Task() {
+                @Override
+                protected Object call() throws Exception, InterruptedException {
+                    while (!DTWController.GB_INITIAL) {
+                        sleep(100);
+                    }
+                    return true;
+                }
+
+                @Override
+                protected void succeeded() {
+                    act.run();
+                }
+
+            };
+            new Thread(t).start();
+        }
+
+        public void waitGesture(String text, Actions act) {
+            instruction.setText(text);
+            Task t = new Task() {
+                @Override
+                protected Object call() throws Exception, InterruptedException {
+                    while (!DTWController.GB_MOVE) {
+                        sleep(100);
+                    }
+                    while (DTWController.GB_MOVE) {
+                        sleep(100);
+                    }
+                    return true;
+                }
+
+                @Override
+                protected void succeeded() {
+                    act.run();
+                }
+
+            };
+            new Thread(t).start();
+        }
+
+        public void validate() {
+            waitingInitial("Posicione seu braço novamente na posição inicial", new Actions() {
+                public void run() {
+                    stop = false;
+                    clear();
+                    waitGesture("Agora repita seu gesto...", new Actions() {
+                        public void run() {
+                            stop = true;
+                            mediaValidation = DTWController.compare(gestureValidate, getGesture());
+                            if (mediaValidation > 70) {
+                                showMessage("Erro: " + Integer.toString(mediaValidation) + " - Máximo: 70", 3000, new Actions() {
+                                    public void run() {
+                                        validate();
+                                    }
+                                });
+                            } else {
+
+                                System.out.println("ssgsdgsdg");
+                                instruction.setText("Muito bem seu gesto está válido "+ mediaValidation);
+                                clear();
+                                setGesture(gestureValidate);
+                            }
+
+                        }
+                    });
+                }
+            });
+
+        }
+
+        public void showMessage(String text, int time, Actions act) {
+            instruction.setText(text);
+            Task t = new Task() {
+                @Override
+                protected Object call() throws Exception, InterruptedException {
+                    sleep(time);
+                    return true;
+                }
+
+                @Override
+                protected void succeeded() {
+                    act.run();
+                }
+
+            };
+            new Thread(t).start();
+
+        }
+
+        public void start() {
+            waitingInitial("Posicione seu braço na posição inicial...", new Actions() {
+                public void run() {
+                    stop = false;
+                    waitGesture("Agora faça seu gesto...", new Actions() {
+                        public void run() {
+                            stop = true;
+                            txtBegin.setText("0");
+                            txtEnd.setText(Integer.toString(series1.getData().size() - 1));
+                            gestureValidate = getGesture();
+                            if(series1.getData().size()>50){
+                                validate();
+                            }
+                            else{
+                                start();
+                            }
+                            
+
+                        }
+                    });
+                }
+            });
+        }
+
+    }
+
 }

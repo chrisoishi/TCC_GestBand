@@ -37,7 +37,7 @@ public class DTWController {
     }
 
     public static void receive(String s) {
-
+        //System.out.println(s);
         try {
             buff = s.split(":");
             if (buff[0].equals("A")) {
@@ -145,10 +145,13 @@ public class DTWController {
     }
 
     public static void execute() {
+        
         if (ACTIVE) {
+            
             i_period++;
             //print(50);
             if (i_period == PERIOD) {
+                //System.out.println("ffdfd");
                 validate();
                 i_period = 0;
             }
@@ -162,6 +165,7 @@ public class DTWController {
         Gestures g;
         min = 70;
         certo = "";
+        if(ProfileController.current == null)return;
         for (String id : ProfileController.current.data.keySet()) {
             m = 0;
             g = GestureController.getById(id);
@@ -185,8 +189,9 @@ public class DTWController {
             g = GestureController.getById(certo);
             System.out.println("Gesto:" + g.name);
             clear();
-            if (!g.default_action.equals("")) {
-                Simulation.pressKey(g.default_action);
+            String action = ProfileController.current.data.get(g.id).action;
+            if (!action.equals("")) {
+                Simulation.pressKey(action);
             }
         }
     }

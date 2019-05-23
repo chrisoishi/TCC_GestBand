@@ -33,6 +33,7 @@ public class ProfileController {
     public static void set(int index) {
         set = index;
         if (index != -1) {
+            if(index>=perfis.size());
             current = perfis.get(index);
         }
 //        Profiles p = perfis.get(index);;

@@ -114,7 +114,7 @@ public class ClientBluetooth {
                             acts.run((char) is.read());
                         }
                     } catch (IOException ex) {
-                        Logger.getLogger(ClientBluetooth.class.getName()).log(Level.SEVERE, null, ex);
+                        System.out.println(ex);
                     }
                 }
             }

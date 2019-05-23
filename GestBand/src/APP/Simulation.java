@@ -25,13 +25,16 @@ public class Simulation {
     }
 
     public static void pressKey(String key) {
-        String keys[] = new String[1];
+          String[] keys; 
+          String aux = key.replace(" + ", ";");
         if (key.contains("+")) {
-            keys = key.split((" + "));
+            keys = aux.split(";");
         } else {
+            keys = new String[1];
             keys[0] = key;
+
         }
-        for (String k : keys) {
+        for (String k : keys) {;
             press(k);
         }
         robot.delay(100);
@@ -43,13 +46,19 @@ public class Simulation {
 
     public static void press(String key) {
         int keycode = map(key);
-        robot.keyPress(keycode);
+        try {
+            robot.keyPress(keycode);
+        } catch (Exception e) {
+        }
+
     }
 
     public static void release(String key) {
         int keycode = map(key);
-
-        robot.keyRelease(keycode);
+        try {
+            robot.keyRelease(keycode);
+        } catch (Exception e) {
+        }
     }
 
     public static void mouse(int vel_x, int vel_y) {

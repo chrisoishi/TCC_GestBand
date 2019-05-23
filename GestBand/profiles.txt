@@ -1,15 +1,7 @@
-name:teste
-1:SHIFT + D;true
-2:B;true
-3:SHIFT + N;true
---end
-name:teee
-1:SHIFT;true
---end
-name:nano
-11:A;true
-12:B;true
-13:C;true
-9:D;true
-10:E;true
+name:Youtube Nano Can
+3396221:A;true
+3386443:B;true
+7141336:C;true
+2107609:D;true
+1352058:E;true
 --end
