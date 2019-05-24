@@ -23,6 +23,7 @@ import APP.Profiles.ProfileData;
 import APP.Settings;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -141,7 +142,7 @@ public class MainController implements Initializable {
         drawer.clear();
         title.setText("Gestos");
         drawer.text("Abaixo está a lista de todos os gestos gravados", 2, true);
-        ComboBox profiles = new ComboBox();
+
         Button b = new Button();
         Profiles p = ProfileController.getSet();
 
@@ -238,9 +239,30 @@ public class MainController implements Initializable {
         });
         drawer_select.print(b, 1);
 
-        if (ProfileController.set != -1 || IS_CREATING_PROFILE) {
-            profiles.getSelectionModel().select(ProfileController.set);
+        //######## APPS ##############
+        ComboBox apps = new ComboBox();
+        for (int i = 0; i < ApplicationController.apps.size(); i++) {
+            apps.getItems().add(ApplicationController.apps.get(i).name);
+        }
+        apps.setOnAction(value -> {
+            System.out.println("sdggsddsgds");
+            ProfileController.current.listExample = apps.getSelectionModel().getSelectedIndex();
+            
+        });
+        //#########################
 
+        if (ProfileController.set != -1 || IS_CREATING_PROFILE) {
+            drawer.text("Lista de comandos", 1, false);
+            drawer.println(apps, 1);
+
+            if (ProfileController.current.listExample != -1) {
+                Map<String, String> app_actions = ApplicationController.apps.get(ProfileController.current.listExample).actions;
+                for (String key : app_actions.keySet()) {
+                    drawer.text(key, 1, false);
+                    drawer.text(app_actions.get(key), 1, true);
+                }
+            }
+            //profiles.getSelectionModel().select(ProfileController.set);
             drawer.text("Nome do perfil", 1, false);
             ComboBox gestos = new ComboBox();
             gestos.setOnAction(value -> {
@@ -302,7 +324,7 @@ public class MainController implements Initializable {
                     keyLast = all;
                 });
                 tf.setOnKeyReleased(key_event -> {
-                   
+
                     keyPressed.removeIf(s -> (s.equals(key_event.getCode().name())));
                     tf.setText(keyLast);
                     cb.selectedProperty().set(true);

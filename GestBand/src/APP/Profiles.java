@@ -21,6 +21,8 @@ public class Profiles {
     public Map<String, ProfileData> data = new HashMap<String, ProfileData>();
     public List<Boolean> gestos = new ArrayList<>();
     public List<String> comandos = new ArrayList<>();
+    
+    public int listExample = -1;
 
     public Profiles(String name) {
         save(name);

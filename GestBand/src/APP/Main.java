@@ -56,6 +56,7 @@ public class Main extends Application {
         DTWController.init();
         GestureController.getGestures();
         ProfileController.getProfiles();
+        ApplicationController.load();
 
     }
 
