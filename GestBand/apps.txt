@@ -1,3 +1,15 @@
 name:Youtube
-command:SHIFT+N;Próximo vídeo
+command:SPACE;Reproduzir/Pausar o video
+command:J;Retroceder 10 segundos do video
+command:L;Avancar 10 segundos do video
+command:SHIFT+N;Proximo video
+command:UP;Aumenta 5% do volume do video
+command:DOWN;Diminui 5% do volume do video
+--end
+name:Powerpoint
+command:F5;Iniciar uma apresentacao do inicio
+command:RIGHT;Avancar para o proximo slide
+command:LEFT;Retroceder para o slide anterior
+command:ALT+P;Reproduzir/Pausar midia em apresentacao
+command:ESQ;Encerrar a apresentacao
 --end

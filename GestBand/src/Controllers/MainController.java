@@ -245,10 +245,9 @@ public class MainController implements Initializable {
             apps.getItems().add(ApplicationController.apps.get(i).name);
         }
         apps.setOnAction(value -> {
-            System.out.println("sdggsddsgds");
             ProfileController.current.listExample = apps.getSelectionModel().getSelectedIndex();
-            
-        });
+            show_profiles();
+        }); 
         //#########################
 
         if (ProfileController.set != -1 || IS_CREATING_PROFILE) {
