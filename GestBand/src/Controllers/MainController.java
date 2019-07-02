@@ -253,8 +253,9 @@ public class MainController implements Initializable {
         if (ProfileController.set != -1 || IS_CREATING_PROFILE) {
             drawer.text("Lista de comandos", 1, false);
             drawer.println(apps, 1);
-
+                
             if (ProfileController.current.listExample != -1) {
+                drawer.text(ApplicationController.apps.get(ProfileController.current.listExample).name, 2, true);
                 Map<String, String> app_actions = ApplicationController.apps.get(ProfileController.current.listExample).actions;
                 for (String key : app_actions.keySet()) {
                     drawer.text(key, 1, false);

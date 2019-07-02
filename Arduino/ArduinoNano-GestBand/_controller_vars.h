@@ -1,8 +1,8 @@
 #include <SoftwareSerial.h>
 
 // #### PINOS ####
-const int8_t batteryPin = A3;
-const int8_t buttonPin = 8;
+const int8_t batteryPin = A2;
+const int8_t buttonPin = 7;
 const int8_t redPin = 9;
 const int8_t greenPin = 10;
 const int8_t bluePin = 11;

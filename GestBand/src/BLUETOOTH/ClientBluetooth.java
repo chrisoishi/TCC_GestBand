@@ -98,8 +98,10 @@ public class ClientBluetooth {
     }
 
     public static void send(String text) {
+        System.out.println(text);
         try {
             os.write(text.getBytes());
+            
         } catch (IOException ex) {
             Logger.getLogger(ClientBluetooth.class.getName()).log(Level.SEVERE, null, ex);
         }

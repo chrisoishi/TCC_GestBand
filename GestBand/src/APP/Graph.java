@@ -412,9 +412,12 @@ public class Graph {
     }
 
     private class Tasks {
-
+        public void colorMessage(String color){
+            instruction.setStyle("-fx-text-fill:"+color+";-fx-font-size: 20pt;");
+        }
         public void waitingInitial(String text, Actions act) {
             instruction.setText(text);
+            colorMessage("orange");
             Task t = new Task() {
                 @Override
                 protected Object call() throws Exception, InterruptedException {
@@ -433,8 +436,30 @@ public class Graph {
             new Thread(t).start();
         }
 
+        public void waitingNoInitial(String text, Actions act) {
+            instruction.setText(text);
+            colorMessage("orange");
+            Task t = new Task() {
+                @Override
+                protected Object call() throws Exception, InterruptedException {
+                    while (DTWController.GB_INITIAL) {
+                        sleep(100);
+                    }
+                    return true;
+                }
+
+                @Override
+                protected void succeeded() {
+                    act.run();
+                }
+
+            };
+            new Thread(t).start();
+        }
+
         public void waitGesture(String text, Actions act) {
             instruction.setText(text);
+            colorMessage("blue");
             Task t = new Task() {
                 @Override
                 protected Object call() throws Exception, InterruptedException {
@@ -456,38 +481,55 @@ public class Graph {
             new Thread(t).start();
         }
 
-        public void validate() {
-            waitingInitial("Posicione seu braço novamente na posição inicial", new Actions() {
-                public void run() {
-                    stop = false;
-                    clear();
-                    waitGesture("Agora repita seu gesto...", new Actions() {
-                        public void run() {
-                            stop = true;
-                            mediaValidation = DTWController.compare(gestureValidate, getGesture());
-                            if (mediaValidation > 70) {
-                                showMessage("Erro: " + Integer.toString(mediaValidation) + " - Máximo: 70", 3000, new Actions() {
+        public void validate(int time) {
+            if (time < 3) {
+                waitingNoInitial("Saia da posição inicial...", new Actions() {
+                    public void run() {
+                        waitingInitial("Posicione seu braço novamente na posição inicial", new Actions() {
+                            public void run() {
+                                showMessage("Aguarde...","black", 1500, new Actions() {
                                     public void run() {
-                                        validate();
+                                        stop = false;
+                                        clear();
+                                        waitGesture("Agora repita seu gesto...", new Actions() {
+                                            public void run() {
+                                                stop = true;
+                                                mediaValidation = DTWController.compare(gestureValidate, getGesture());
+                                                if (mediaValidation > 70) {
+                                                    showMessage("Tentativa " + (time + 1) + "/3 - Erro: " + Integer.toString(mediaValidation) + " - Máximo: 70","red", 3000, new Actions() {
+                                                        public void run() {
+                                                            validate(time + 1);
+                                                        }
+                                                    });
+                                                } else {
+
+                                                    System.out.println("ssgsdgsdg");
+                                                    colorMessage("green");
+                                                    instruction.setText("Muito bem seu gesto está válido ");
+                                                    clear();
+                                                    setGesture(gestureValidate);
+                                                }
+
+                                            }
+                                        });
+
                                     }
                                 });
-                            } else {
 
-                                System.out.println("ssgsdgsdg");
-                                instruction.setText("Muito bem seu gesto está válido "+ mediaValidation);
-                                clear();
-                                setGesture(gestureValidate);
                             }
-
-                        }
-                    });
-                }
-            });
+                        });
+                    }
+                });
+            } else {
+                instruction.setText("Não foi possível validar seu gesto :(");
+                colorMessage("red");
+            }
 
         }
 
-        public void showMessage(String text, int time, Actions act) {
+        public void showMessage(String text, String color,int time, Actions act) {
             instruction.setText(text);
+            colorMessage(color);
             Task t = new Task() {
                 @Override
                 protected Object call() throws Exception, InterruptedException {
@@ -506,27 +548,35 @@ public class Graph {
         }
 
         public void start() {
-            waitingInitial("Posicione seu braço na posição inicial...", new Actions() {
+            waitingNoInitial("Saia da posição inicial...", new Actions() {
                 public void run() {
-                    stop = false;
-                    waitGesture("Agora faça seu gesto...", new Actions() {
+                    waitingInitial("Posicione seu braço na posição inicial...", new Actions() {
                         public void run() {
-                            stop = true;
-                            txtBegin.setText("0");
-                            txtEnd.setText(Integer.toString(series1.getData().size() - 1));
-                            gestureValidate = getGesture();
-                            if(series1.getData().size()>50){
-                                validate();
-                            }
-                            else{
-                                start();
-                            }
-                            
+                            showMessage("Aguarde...","black", 1500, new Actions() {
+                                public void run() {
+                                    stop = false;
+                                    waitGesture("Agora faça seu gesto...", new Actions() {
+                                        public void run() {
+                                            stop = true;
+                                            txtBegin.setText("0");
+                                            txtEnd.setText(Integer.toString(series1.getData().size() - 1));
+                                            gestureValidate = getGesture();
+                                            if (series1.getData().size() > 50) {
+                                                validate(0);
+                                            } else {
+                                                start();
+                                            }
+
+                                        }
+                                    });
+                                }
+                            });
 
                         }
                     });
                 }
             });
+
         }
 
     }

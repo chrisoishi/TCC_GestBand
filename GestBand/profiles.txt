@@ -1,9 +1,8 @@
-name:Youtube Nano Can
-7483058:E;true
-5670893:C;true
-8890540:A;true
-1279858:B;true
-5230955:D;true
---end
-name:Nano dir
+name:teste
+3791164:F;true
+4033172:K;true
+2979664:SPACE;true
+9845497:Q;true
+5366615:J;true
+7725756:ESCAPE;true
 --end

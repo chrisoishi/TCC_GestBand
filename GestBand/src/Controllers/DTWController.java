@@ -16,7 +16,7 @@ import APP.Simulation;
  */
 public class DTWController {
 
-    public static final int MAX_SIZE = 200;
+    public static final int MAX_SIZE = 2000;
     public static final int PERIOD = 1;
 
     public static DTW lDTW = new DTW();
@@ -27,6 +27,7 @@ public class DTWController {
 
     public static boolean ACTIVE = false;
     public static boolean GB_MOVE = false;
+    public static boolean GB_MOVE2 = false;
     public static boolean GB_INITIAL = false;
     public static int buff_moving = 0;
     public static int buff_position = 0;
@@ -57,7 +58,7 @@ public class DTWController {
         } catch (Exception e) {
             System.out.println("erros nos dados....");
         }
-
+            
     }
 
     public static void position(String[] d) {
@@ -101,16 +102,19 @@ public class DTWController {
             buff_moving += 2;
             if (buff_moving == 20 & !GB_MOVE) {
                 GB_MOVE = true;
+                GB_MOVE2 = true;
                 //System.out.println(GB_MOVE);
             }
         } else if (m < 9 & GB_MOVE) {
             buff_moving--;
+            if(buff_moving == 10)GB_MOVE2 = false;
             if (buff_moving == 0 & GB_MOVE) {
                 GB_MOVE = false;
                 //validate();
                 //System.out.println(GB_MOVE);
             }
         }
+
     }
 
     public static void add_data(String value, int eixo) {
@@ -124,9 +128,10 @@ public class DTWController {
     }
 
     public static float[][] get_data(int size) {
-        int remaind = size;
+       
+        int remaind = size+20;
         int i = i_current;
-        float[][] test_data = new float[6][size];
+        float[][] test_data = new float[6][size+20];
         while (remaind > 0) {
             i--;
             if (i < 0) {
@@ -142,6 +147,7 @@ public class DTWController {
 
         }
         return test_data;
+        
     }
 
     public static void execute() {
@@ -163,9 +169,10 @@ public class DTWController {
         String certo;
         float[][] d;
         Gestures g;
-        min = 70;
+        min = 500;
         certo = "";
         if(ProfileController.current == null)return;
+        if(GB_MOVE2)return;
         for (String id : ProfileController.current.data.keySet()) {
             m = 0;
             g = GestureController.getById(id);
@@ -177,6 +184,7 @@ public class DTWController {
             m += lDTW.compute(g.gY, d[4]).getDistance();
             m += lDTW.compute(g.gZ, d[5]).getDistance();
             m = m / 6;
+            //System.out.print(m+":");
             if (m < min) {
                 certo = id;
                 min = m;
@@ -185,9 +193,13 @@ public class DTWController {
                 //sSystem.out.println("TESTE:" + m + "   " + g.name);
             }
         }
-        if (min < 70) {
+        //System.out.println(" ");
+        g = GestureController.getById(certo);
+//        System.out.println(min);
+        if (min < 90) {
             g = GestureController.getById(certo);
             System.out.println("Gesto:" + g.name);
+            System.out.println(min);
             clear();
             String action = ProfileController.current.data.get(g.id).action;
             if (!action.equals("")) {
